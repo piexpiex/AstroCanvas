@@ -52,6 +52,8 @@ def BIAS_IMAGES(self,master):
 			pass
 		global MASTER_BIAS
 		global MASTER_BIAS_std
+		global MAX_MASTER_BIAS_std
+		global MIN_MASTER_BIAS_std
 		BIAS_list=self.BIAS_get.get()
 		BIAS_images=read_list(BIAS_list)
 		for j in range(len(BIAS_images)):
@@ -61,33 +63,34 @@ def BIAS_IMAGES(self,master):
 				BIAS_data=np.dstack((BIAS_data,np.array(read_image(BIAS_images[j]))))
 
 		#Cut image
-		BIAS_x_1,BIAS_x_2,BIAS_y_1,BIAS_y_2=self.Xmin_value.get(),self.Xmax_value.get(),self.Ymin_value.get(),self.Ymax_value.get()
+		BIAS_x_1,BIAS_x_2,BIAS_y_1,BIAS_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
 		#Selection of combining method
 		combining_method=combining.get()
 		
 		if combining_method=='average':
 			MASTER_BIAS=np.mean(BIAS_data,axis=2)
-			print(np.shape(MASTER_BIAS))
 			MASTER_BIAS_std=np.std(BIAS_data,axis=2)
-			print(MASTER_BIAS)
 		elif combining_method=='median':
 			MASTER_BIAS=np.median(BIAS_data,axis=2)
-			print(np.shape(MASTER_BIAS))
 			MASTER_BIAS_std=np.std(BIAS_data,axis=2)
-			print(MASTER_BIAS)
+		MAX_MASTER_BIAS=max(np.amax(MASTER_BIAS,axis=0))
+		MIN_MASTER_BIAS=min(np.amin(MASTER_BIAS,axis=0))
+		MAX_MASTER_BIAS_std=max(np.amax(MASTER_BIAS_std,axis=0))
+		MIN_MASTER_BIAS_std=min(np.amin(MASTER_BIAS_std,axis=0))
 		try:
 			MASTER_BIAS=MASTER_BIAS[int(BIAS_x_1):int(BIAS_x_2),int(BIAS_y_1):int(BIAS_y_2)]
 			MASTER_BIAS_std=MASTER_BIAS_std[int(BIAS_x_1):int(BIAS_x_2),int(BIAS_y_1):int(BIAS_y_2)]
 		except:
 			pass
-	
-		y, x = np.mgrid[slice(0,len(MASTER_BIAS[:,0]), 1) ,slice(0, len(MASTER_BIAS[0,:]), 1) ]
+		
+		y, x = np.mgrid[slice(0,len(MASTER_BIAS[:,0])+1, 1) ,slice(0, len(MASTER_BIAS[0,:])+1, 1) ]
 		cmap = plt.get_cmap('hot')
 	
 		fig, ax = plt.subplots()
 		axoff_fun(ax)
 		
 		im = ax.pcolormesh(x, y, MASTER_BIAS, cmap=cmap)
+		im.set_clim(MIN_MASTER_BIAS, MAX_MASTER_BIAS)
 		fig.colorbar(im, ax=ax)
 
 		fig.set_size_inches(4.5,4.5)
@@ -110,14 +113,17 @@ def BIAS_IMAGES(self,master):
 			pass
 			
 		global MASTER_BIAS_std
+		global MAX_MASTER_BIAS_std
+		global MIN_MASTER_BIAS_std
 		
-		y, x = np.mgrid[slice(0,len(MASTER_BIAS_std[:,0]), 1) ,slice(0, len(MASTER_BIAS_std[0,:]), 1) ]
+		y, x = np.mgrid[slice(0,len(MASTER_BIAS_std[:,0])+1, 1) ,slice(0, len(MASTER_BIAS_std[0,:])+1, 1) ]
 		cmap = plt.get_cmap('hot')
 	
 		fig, ax = plt.subplots()
 		axoff_fun(ax)
 		
 		im = ax.pcolormesh(x, y, MASTER_BIAS_std, cmap=cmap)
+		im.set_clim(MIN_MASTER_BIAS_std, MAX_MASTER_BIAS_std)
 		fig.colorbar(im, ax=ax)	
 		fig.set_size_inches(4.5,4.5)
 		

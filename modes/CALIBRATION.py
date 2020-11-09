@@ -9,20 +9,20 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
-def DARK_IMAGES(self,master):
-	#-------estimation of master DARK image----------
+def CALIBRATION_IMAGES(self,master):
+	#-------Calibration of astronomical images----------
 	
 	
-	self.MASTER_DARK_MAKER_text=Label(master,text='MASTER DARK MAKER',width=45,bg='grey')
-	self.MASTER_DARK_MAKER_text.pack()
-	self.MASTER_DARK_MAKER_text.place(x=10,y=350)
-	self.DARK_text=Label(master,text='dark images',width=10,bg='grey')
-	self.DARK_text.pack()
-	self.DARK_text.place(x=10,y=380)
-	self.DARK_get=Entry(master,bg='grey',width=40)
-	self.DARK_get.insert(0,'dark.ls')
-	self.DARK_get.pack()
-	self.DARK_get.place(x=90,y=380)
+	self.IMAGE_MAKER_text=Label(master,text='IMAGE CALIBRATION',width=45,bg='grey')
+	self.IMAGE_MAKER_text.pack()
+	self.IMAGE_MAKER_text.place(x=10,y=350)
+	self.IMAGE_text=Label(master,text='images',width=10,bg='grey')
+	self.IMAGE_text.pack()
+	self.IMAGE_text.place(x=10,y=380)
+	self.IMAGE_get=Entry(master,bg='grey',width=40)
+	self.IMAGE_get.insert(0,'images.ls')
+	self.IMAGE_get.pack()
+	self.IMAGE_get.place(x=90,y=380)
 	
 	self.time_text=Label(master,text='time keyword',width=10,bg='grey')
 	self.time_text.pack()
@@ -36,16 +36,35 @@ def DARK_IMAGES(self,master):
 	self.MASTER_BIAS_text.pack()
 	self.MASTER_BIAS_text.place(x=10,y=440)
 	self.MASTER_BIAS_get=Entry(master,bg='grey',width=40)
-	self.MASTER_BIAS_get.insert(0,'BIAS.fits')
+	self.MASTER_BIAS_get.insert(0,'bias.fits')
 	self.MASTER_BIAS_get.pack()
 	self.MASTER_BIAS_get.place(x=90,y=440)
+	
+	self.MASTER_DARK_text=Label(master,text='master dark',width=10,bg='grey')
+	self.MASTER_DARK_text.pack()
+	self.MASTER_DARK_text.place(x=10,y=470)
+	self.MASTER_DARK_get=Entry(master,bg='grey',width=40)
+	self.MASTER_DARK_get.insert(0,'dark.fits')
+	self.MASTER_DARK_get.pack()
+	self.MASTER_DARK_get.place(x=90,y=470)
+	
+	self.MASTER_FLAT_text=Label(master,text='master flat',width=10,bg='grey')
+	self.MASTER_FLAT_text.pack()
+	self.MASTER_FLAT_text.place(x=10,y=500)
+	self.MASTER_FLAT_get=Entry(master,bg='grey',width=40)
+	self.MASTER_FLAT_get.insert(0,'flat.fits')
+	self.MASTER_FLAT_get.pack()
+	self.MASTER_FLAT_get.place(x=90,y=500)
 
-	def read_image(image):
+	def read_image(image,warning_no='yes'):
 		image_name=str(image)
 		if image_name[len(image_name)-5:]=='.fits':
 			image_data=fits.open(image_name)[0].data
 		else:
-			print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
+			if warning_no=='no':
+				pass
+			else:
+				print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
 		return(image_data)
 	def delete_space(A):
 		if len(A)<2:
@@ -94,65 +113,72 @@ def DARK_IMAGES(self,master):
 				tiempo=hdr[keyword]
 				time_list.append(float(tiempo))
 			return(image_list,time_list)
-	def dark_image(*event):
+	def cal_image(*event):
 		#destroy previous canvas to save memory
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
 			pass
-		global MASTER_DARK
-		global MASTER_DARK_std
-		global MIN_MASTER_DARK_std
-		global MAX_MASTER_DARK_std
+		global MASTER_IMAGE
+		global MASTER_IMAGE_std
+		global MIN_MASTER_IMAGE_std
+		global MAX_MASTER_IMAGE_std
 		
-		DARK_list=self.DARK_get.get()
+		image_list=self.IMAGE_get.get()
 		time_keyword=self.time_get.get()
 		BIAS=self.MASTER_BIAS_get.get()
 		BIAS_MASTER=np.array(read_image(BIAS))
+		DARK=self.MASTER_DARK_get.get()
+		try:
+			DARK_MASTER=np.array(read_image(DARK,warning_no='no'))
+		except:
+			DARK_MASTER=np.zeros(np.shape(BIAS_MASTER))
+		FLAT=self.MASTER_FLAT_get.get()
+		FLAT_MASTER=np.array(read_image(FLAT))
 		if time_keyword=='auto' or time_keyword=='AUTO':
-			DARK_images,time_list=read_list(DARK_list,keyword='auto')
+			cal_images,time_list=read_list(image_list,keyword='auto')
 		else:
-			DARK_images,time_list=read_list(DARK_list,keyword=time_keyword)
+			cal_images,time_list=read_list(image_list,keyword=time_keyword)
 		print(time_list)
-		for j in range(len(DARK_images)):
+		for j in range(len(cal_images)):
 			if j==0:
-				DARK_data=(np.array(read_image(DARK_images[j])) - BIAS_MASTER)/time_list[j]
+				cal_data=((np.array(read_image(cal_images[j])) - BIAS_MASTER)/time_list[j] - DARK_MASTER)/5
 			else:
-				DARK_data=np.dstack((DARK_data,(np.array(read_image(DARK_images[j])) - BIAS_MASTER)/time_list[j]))
+				cal_data=np.dstack((cal_data,((np.array(read_image(cal_images[j])) - BIAS_MASTER  )/time_list[j] - DARK_MASTER)/5)  )
 
 		#Cut image
-		DARK_x_1,DARK_x_2,DARK_y_1,DARK_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
+		cal_x_1,cal_x_2,cal_y_1,cal_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
 		#Selection of combining method
 		combining_method=combining.get()
 		
 		if combining_method=='average':
-			MASTER_DARK=np.mean(DARK_data,axis=2)
-			print(np.shape(MASTER_DARK))
-			MASTER_DARK_std=np.std(DARK_data,axis=2)
-			print(MASTER_DARK)
+			MASTER_IMAGE=np.mean(cal_data,axis=2)
+			print(np.shape(MASTER_IMAGE))
+			MASTER_IMAGE_std=np.std(cal_data,axis=2)
+			print(MASTER_IMAGE)
 		elif combining_method=='median':
-			MASTER_DARK=np.median(DARK_data,axis=2)
-			print(np.shape(MASTER_DARK))
-			MASTER_DARK_std=np.std(DARK_data,axis=2)
-			print(MASTER_DARK)
-		MAX_MASTER_DARK=max(np.amax(MASTER_DARK,axis=0))
-		MIN_MASTER_DARK=min(np.amin(MASTER_DARK,axis=0))
-		MAX_MASTER_DARK_std=max(np.amax(MASTER_DARK_std,axis=0))
-		MIN_MASTER_DARK_std=min(np.amin(MASTER_DARK_std,axis=0))
+			MASTER_IMAGE=np.median(cal_data,axis=2)
+			print(np.shape(MASTER_IMAGE))
+			MASTER_IMAGE_std=np.std(cal_data,axis=2)
+			print(MASTER_IMAGE)
+		MAX_MASTER_IMAGE=max(np.amax(MASTER_IMAGE,axis=0))
+		MIN_MASTER_IMAGE=min(np.amin(MASTER_IMAGE,axis=0))
+		MAX_MASTER_IMAGE_std=max(np.amax(MASTER_IMAGE_std,axis=0))
+		MIN_MASTER_IMAGE_std=min(np.amin(MASTER_IMAGE_std,axis=0))
 		try:
-			MASTER_DARK=MASTER_DARK[int(DARK_x_1):int(DARK_x_2),int(DARK_y_1):int(DARK_y_2)]
-			MASTER_DARK_std=MASTER_DARK_std[int(DARK_x_1):int(DARK_x_2),int(DARK_y_1):int(DARK_y_2)]
+			MASTER_IMAGE=MASTER_IMAGE[int(cal_x_1):int(cal_x_2),int(cal_y_1):int(cal_y_2)]
+			MASTER_IMAGE_std=MASTER_IMAGE_std[int(cal_x_1):int(cal_x_2),int(cal_y_1):int(cal_y_2)]
 		except:
 			pass
 	
-		y, x = np.mgrid[slice(0,len(MASTER_DARK[:,0])+1, 1) ,slice(0, len(MASTER_DARK[0,:])+1, 1) ]
+		y, x = np.mgrid[slice(0,len(MASTER_IMAGE[:,0])+1, 1) ,slice(0, len(MASTER_IMAGE[0,:])+1, 1) ]
 		cmap = plt.get_cmap('hot')
 	
 		fig, ax = plt.subplots()
 		axoff_fun(ax)
 		
-		im = ax.pcolormesh(x, y, MASTER_DARK, cmap=cmap)
-		im.set_clim(MIN_MASTER_DARK, MAX_MASTER_DARK)
+		im = ax.pcolormesh(x, y, MASTER_IMAGE, cmap=cmap)
+		im.set_clim(MIN_MASTER_IMAGE, MAX_MASTER_IMAGE)
 		fig.colorbar(im, ax=ax)
 
 		fig.set_size_inches(4.5,4.5)
@@ -167,25 +193,25 @@ def DARK_IMAGES(self,master):
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		#plt.show()
 		
-	def dark_std(*event):
+	def cal_std(*event):
 		#destroy previous canvas to save memory
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
 			pass
 			
-		global MASTER_DARK_std
-		global MIN_MASTER_DARK_std
-		global MAX_MASTER_DARK_std
+		global MASTER_IMAGE_std
+		global MIN_MASTER_IMAGE_std
+		global MAX_MASTER_IMAGE_std
 		
-		y, x = np.mgrid[slice(0,len(MASTER_DARK_std[:,0])+1, 1) ,slice(0, len(MASTER_DARK_std[0,:])+1, 1) ]
+		y, x = np.mgrid[slice(0,len(MASTER_IMAGE_std[:,0])+1, 1) ,slice(0, len(MASTER_IMAGE_std[0,:])+1, 1) ]
 		cmap = plt.get_cmap('hot')
 	
 		fig, ax = plt.subplots()
 		axoff_fun(ax)
 		
-		im = ax.pcolormesh(x, y, MASTER_DARK_std, cmap=cmap)
-		im.set_clim(MIN_MASTER_DARK_std, MAX_MASTER_DARK_std)
+		im = ax.pcolormesh(x, y, MASTER_IMAGE_std, cmap=cmap)
+		im.set_clim(MIN_MASTER_IMAGE_std, MAX_MASTER_IMAGE_std)
 		fig.colorbar(im, ax=ax)	
 		fig.set_size_inches(4.5,4.5)
 		
@@ -229,13 +255,13 @@ def DARK_IMAGES(self,master):
 	self.combining_get.place(x=200,y=300,height=30)
 	
 	def save_image(*event):
-		global MASTER_DARK
+		global MASTER_IMAGE
 		name=self.image_name.get()
-		hdu = fits.PrimaryHDU(MASTER_DARK)
+		hdu = fits.PrimaryHDU(MASTER_IMAGE)
 		t = fits.HDUList([hdu])
 		t.writeto(name+'.fits',overwrite=True)
 	
-	self.save_image_text=Button(master,text='Save master dark as',width=20,bg='grey',command=save_image)
+	self.save_image_text=Button(master,text='Save image as',width=20,bg='grey',command=save_image)
 	self.save_image_text.pack()
 	self.save_image_text.place(x=400,y=620)
 	self.image_name=Entry(master,bg='grey')
@@ -243,11 +269,11 @@ def DARK_IMAGES(self,master):
 	self.image_name.pack()
 	self.image_name.place(x=560,y=620,width=200,height=30)
 	
-	self.combining_button=Button(master,text='Make master dark',width=20,command=dark_image,bg='grey')
+	self.combining_button=Button(master,text='Make image',width=20,command=cal_image,bg='grey')
 	self.combining_button.pack()
 	self.combining_button.place(x=10,y=590)
 	
-	self.show_std_button=Button(master,text='Show standard deviation',width=20,command=dark_std,bg='grey')
+	self.show_std_button=Button(master,text='Show standard deviation',width=20,command=cal_std,bg='grey')
 	self.show_std_button.pack()
 	self.show_std_button.place(x=180,y=590)
 	
