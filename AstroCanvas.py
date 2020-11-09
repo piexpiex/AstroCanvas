@@ -3,6 +3,8 @@ from modes.RGB_MAKER import *
 from modes.GREY_MAKER import *
 from modes.BIAS import *
 from modes.DARKS import *
+from modes.FLATS import *
+from modes.CALIBRATION import *
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib.colors import BoundaryNorm
@@ -40,7 +42,7 @@ class App:
 			if theme.get()=='normal':
 				logo_color='white'
 				color='white'
-			elif theme.get()=='nocturno':
+			elif theme.get()=='night':
 				logo_color='black'
 				color='black'
 			elif theme.get()=='blue':
@@ -66,7 +68,7 @@ class App:
 		self.basic_mode_text=Label(master,text='Mode',width=10,bg='grey')
 		self.basic_mode_text.pack()
 		self.basic_mode_text.place(x=10,y=150)
-		self.basic_mode_get = OptionMenu(master, mode,'bias','darks','flats','espectral arcs', 'rgb images', 'grey images')
+		self.basic_mode_get = OptionMenu(master, mode,'bias','darks','flats','espectral arcs','image calibration', 'rgb images', 'grey images')
 		self.basic_mode_get.config(width=10,bg='grey',highlightthickness=0)
 		self.basic_mode_get.pack()
 		self.basic_mode_get.place(x=100,y=150)
@@ -87,12 +89,19 @@ class App:
 			elif mode.get()=='darks':
 				_=destroy_app(self)
 				_=DARK_IMAGES(self,master)
+			elif mode.get()=='flats':
+				_=destroy_app(self)
+				_=FLAT_IMAGES(self,master)
+			elif mode.get()=='image calibration':
+				_=destroy_app(self)
+				_=CALIBRATION_IMAGES(self,master)
 			elif mode.get()=='rgb images':
 				_=destroy_app(self)
 				_=RGB_IMAGES(self,master)
 			elif mode.get()=='grey images':
 				_=destroy_app(self)
 				_=GREY_IMAGES(self,master)
+			
 		
 		mode.trace('w',_mode)
 
