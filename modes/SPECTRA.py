@@ -10,7 +10,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
 def BIAS_IMAGES(self,master):
-	#-------estimation of master bias image----------
+	#-------Representation of the spectra----------
 	
 	
 	self.MASTER_BIAS_MAKER_text=Label(master,text='MASTER BIAS MAKER',width=45,bg='grey')

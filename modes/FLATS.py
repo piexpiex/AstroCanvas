@@ -56,15 +56,26 @@ def FLAT_IMAGES(self,master):
 	self.MASTER_NORMAL_get.pack()
 	self.MASTER_NORMAL_get.place(x=90,y=500)
 
-	def read_image(image,warning_no='yes'):
-		image_name=str(image)
-		if image_name[len(image_name)-5:]=='.fits':
-			image_data=fits.open(image_name)[0].data
-		else:
-			if warning_no=='no':
-				pass
+	def read_image(image):
+		try:
+			image=float(image)
+		except:
+			pass
+		if type(image)==str:
+			image_name=delete_space(str(image))
+			if image_name[len(image_name)-5:]=='.fits':
+				image_data=fits.open(image_name)[0].data
 			else:
-				print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
+				try:
+					fichero=open(image)
+					for linea in fichero:
+						image_name=linea
+						break
+					image_data=fits.open(image_name[0:len(image_name)-1])[0].data
+				except:
+					print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
+		else:
+			image_data=image
 		return(image_data)
 	def delete_space(A):
 		if len(A)<2:
@@ -72,11 +83,22 @@ def FLAT_IMAGES(self,master):
 		else:
 			while A[0]==' ' and len(A)>1:
 				A=A[1:len(A)]
-			while A[len(A)-1] and len(A)>1==' ':
+			while A[len(A)-1]==' ' and len(A)>1:
 				A=A[0:len(A)-1]
 		return(A)
 	def read_list(file_list,keyword):
-		if keyword=='auto':
+		if file_list[len(file_list)-4:]=='fits':
+			image_list=[file_list]
+			hdul = fits.open(file_list)
+			hdr = hdul[0].header
+			try:
+				tiempo=float(keyword)
+				time_list=[tiempo]
+			except:
+				tiempo=hdr[keyword]
+				time_list=[tiempo]
+			return(image_list,time_list)
+		elif keyword=='auto':
 			image_list=[]
 			time_list=[]
 			fichero=open(file_list)
@@ -103,14 +125,22 @@ def FLAT_IMAGES(self,master):
 			for linea in fichero:
 				linea=linea[0:len(linea)-1]
 				image_list.append(delete_space(linea))
-			for image in image_list:
-				hdul = fits.open(image)
-				hdr = hdul[0].header
-				tiempo=hdr[keyword]
-				time_list.append(float(tiempo))
+			try:
+				tiempo=float(keyword)
+				time_list=[tiempo]
+			except:
+				for image in image_list:
+					hdul = fits.open(image)
+					hdr = hdul[0].header
+					tiempo=hdr[keyword]
+					time_list.append(float(tiempo))
 			return(image_list,time_list)
 	def flat_image(*event):
 		#destroy previous canvas to save memory
+		try:
+			_=self.canvas.toolbar.destroy()
+		except:
+			pass
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
@@ -126,7 +156,7 @@ def FLAT_IMAGES(self,master):
 		BIAS_MASTER=np.array(read_image(BIAS))
 		DARK=self.MASTER_DARK_get.get()
 		try:
-			DARK_MASTER=np.array(read_image(DARK,warning_no='no'))
+			DARK_MASTER=np.array(read_image(DARK))
 		except:
 			DARK_MASTER=np.zeros(np.shape(BIAS_MASTER))
 		NORMALIZE=self.MASTER_NORMAL_get.get()
@@ -145,12 +175,17 @@ def FLAT_IMAGES(self,master):
 		#Selection of combining method
 		combining_method=combining.get()
 		
-		if combining_method=='average':
-			MASTER_FLAT=np.mean(FLAT_data,axis=2)
-			MASTER_FLAT_std=np.std(FLAT_data,axis=2)
-		elif combining_method=='median':
-			MASTER_FLAT=np.median(FLAT_data,axis=2)
-			MASTER_FLAT_std=np.std(FLAT_data,axis=2)
+		if len(FLAT_images)>1:
+			if combining_method=='average':
+				MASTER_FLAT=np.mean(FLAT_data,axis=2)
+				MASTER_FLAT_std=np.std(FLAT_data,axis=2)
+			elif combining_method=='median':
+				MASTER_FLAT=np.median(FLAT_data,axis=2)
+				MASTER_FLAT_std=np.std(FLAT_data,axis=2)
+		else:
+			MASTER_FLAT=FLAT_data
+			MASTER_FLAT_std=np.zeros((10,10))
+			print('only one flat image has been founded')
 			
 		if NORMALIZE=='YES' or NORMALIZE=='yes':
 			MASTER_FLAT_std=MASTER_FLAT_std/np.mean(MASTER_FLAT)
@@ -182,14 +217,29 @@ def FLAT_IMAGES(self,master):
 		self.canvas.draw()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	
-		#toolbar = NavigationToolbar2Tk(canvas, master)
-		#toolbar.update()
+		toolbar = NavigationToolbar2Tk(self.canvas, master)
+		toolbar.update()
+		
+		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		#plt.show()
 		
+		#display information
+		print('\n \n Flat image')
+		print('------------')
+		print('average= (', np.mean(MASTER_FLAT),')')
+		print('standard deviation= (', np.std(MASTER_FLAT),')')
+		print('max= (', max(np.amax(MASTER_FLAT,axis=0)),')')
+		print('min= (', min(np.amin(MASTER_FLAT,axis=0)),')')
+		print('size=',np.shape(MASTER_FLAT)[0],'X',np.shape(MASTER_FLAT)[1])
+		
 	def flat_std(*event):
 		#destroy previous canvas to save memory
+		try:
+			_=self.canvas.toolbar.destroy()
+		except:
+			pass
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
@@ -215,8 +265,10 @@ def FLAT_IMAGES(self,master):
 		self.canvas.draw()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	
-		#toolbar = NavigationToolbar2Tk(canvas, master)
-		#toolbar.update()
+		toolbar = NavigationToolbar2Tk(self.canvas, master)
+		toolbar.update()
+		
+		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		#plt.show()
@@ -232,11 +284,17 @@ def FLAT_IMAGES(self,master):
 	self.Canvas_text.place(x=400,y=100)
 	self.canvas = FigureCanvasTkAgg(fig, master=master)  # A tk.DrawingArea.
 	self.canvas.draw()
-	#toolbar = NavigationToolbar2Tk(canvas, master)
-	#toolbar.update()
 	self.canvas.get_tk_widget().place(x=400,y=150)
 	
-
+	toolbar = NavigationToolbar2Tk(self.canvas, master)
+	toolbar.update()
+		
+	self.canvas.toolbar.place(x=900,y=430)
+	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+	self.canvas.get_tk_widget().place(x=400,y=150)
+	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
+	self.toolbar_text.pack()
+	self.toolbar_text.place(x=900,y=400)
 
 	combining = StringVar(master)
 	combining.set("average") # initial value
@@ -272,7 +330,7 @@ def FLAT_IMAGES(self,master):
 	self.show_std_button.pack()
 	self.show_std_button.place(x=180,y=590)
 	
-	self.ZOOM_text=Label(master,text='Image zoom',width=40,bg='grey')
+	self.ZOOM_text=Label(master,text='Crop image',width=40,bg='grey')
 	self.ZOOM_text.pack()
 	self.ZOOM_text.place(x=900,y=470)
 	

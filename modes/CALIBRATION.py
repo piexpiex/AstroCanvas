@@ -13,7 +13,7 @@ def CALIBRATION_IMAGES(self,master):
 	#-------Calibration of astronomical images----------
 	
 	
-	self.IMAGE_MAKER_text=Label(master,text='IMAGE CALIBRATION',width=45,bg='grey')
+	self.IMAGE_MAKER_text=Label(master,text='IMAGE REDUCTION',width=45,bg='grey')
 	self.IMAGE_MAKER_text.pack()
 	self.IMAGE_MAKER_text.place(x=10,y=350)
 	self.IMAGE_text=Label(master,text='images',width=10,bg='grey')
@@ -56,15 +56,26 @@ def CALIBRATION_IMAGES(self,master):
 	self.MASTER_FLAT_get.pack()
 	self.MASTER_FLAT_get.place(x=90,y=500)
 
-	def read_image(image,warning_no='yes'):
-		image_name=str(image)
-		if image_name[len(image_name)-5:]=='.fits':
-			image_data=fits.open(image_name)[0].data
-		else:
-			if warning_no=='no':
-				pass
+	def read_image(image):
+		try:
+			image=float(image)
+		except:
+			pass
+		if type(image)==str:
+			image_name=delete_space(str(image))
+			if image_name[len(image_name)-5:]=='.fits':
+				image_data=fits.open(image_name)[0].data
 			else:
-				print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
+				try:
+					fichero=open(image)
+					for linea in fichero:
+						image_name=linea
+						break
+					image_data=fits.open(image_name[0:len(image_name)-1])[0].data
+				except:
+					print('the format of the image is not avalaible \n please try with one of these formats: \n     FITS') 
+		else:
+			image_data=image
 		return(image_data)
 	def delete_space(A):
 		if len(A)<2:
@@ -72,12 +83,22 @@ def CALIBRATION_IMAGES(self,master):
 		else:
 			while A[0]==' ' and len(A)>1:
 				A=A[1:len(A)]
-			while A[len(A)-1] and len(A)>1==' ':
+			while A[len(A)-1]==' ' and len(A)>1:
 				A=A[0:len(A)-1]
 		return(A)
 	def read_list(file_list,keyword):
-		print(keyword)
-		if keyword=='auto':
+		if file_list[len(file_list)-4:]=='fits':
+			image_list=[file_list]
+			hdul = fits.open(file_list)
+			hdr = hdul[0].header
+			try:
+				tiempo=float(keyword)
+				time_list=[tiempo]
+			except:
+				tiempo=hdr[keyword]
+				time_list=[tiempo]
+			return(image_list,time_list)
+		elif keyword=='auto':
 			image_list=[]
 			time_list=[]
 			fichero=open(file_list)
@@ -85,9 +106,7 @@ def CALIBRATION_IMAGES(self,master):
 			for linea in fichero:
 				medidor=0
 				post_linea='0 '
-				print(len(linea))
 				for k in range(len(linea)-2):
-					print(k)
 					if medidor==0:
 						if linea[k]==' ':
 							post_linea=linea[k:]
@@ -96,7 +115,6 @@ def CALIBRATION_IMAGES(self,master):
 					else:
 						continue
 				tiempo=post_linea[0:len(post_linea)-1]
-				print('tiempo',tiempo)
 				image_list.append(delete_space(linea))
 				time_list.append(float(delete_space(tiempo)))
 			return(image_list,time_list)
@@ -107,14 +125,22 @@ def CALIBRATION_IMAGES(self,master):
 			for linea in fichero:
 				linea=linea[0:len(linea)-1]
 				image_list.append(delete_space(linea))
-			for image in image_list:
-				hdul = fits.open(image)
-				hdr = hdul[0].header
-				tiempo=hdr[keyword]
-				time_list.append(float(tiempo))
+			try:
+				tiempo=float(keyword)
+				time_list=[tiempo]
+			except:
+				for image in image_list:
+					hdul = fits.open(image)
+					hdr = hdul[0].header
+					tiempo=hdr[keyword]
+					time_list.append(float(tiempo))
 			return(image_list,time_list)
 	def cal_image(*event):
 		#destroy previous canvas to save memory
+		try:
+			_=self.canvas.toolbar.destroy()
+		except:
+			pass
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
@@ -139,28 +165,29 @@ def CALIBRATION_IMAGES(self,master):
 			cal_images,time_list=read_list(image_list,keyword='auto')
 		else:
 			cal_images,time_list=read_list(image_list,keyword=time_keyword)
-		print(time_list)
 		for j in range(len(cal_images)):
 			if j==0:
-				cal_data=((np.array(read_image(cal_images[j])) - BIAS_MASTER)/time_list[j] - DARK_MASTER)/5
+				cal_data=np.divide(((np.array(read_image(cal_images[j])) - BIAS_MASTER)/time_list[j] - DARK_MASTER),FLAT_MASTER)
 			else:
-				cal_data=np.dstack((cal_data,((np.array(read_image(cal_images[j])) - BIAS_MASTER  )/time_list[j] - DARK_MASTER)/5)  )
+				cal_data=np.dstack((cal_data,np.divide(((np.array(read_image(cal_images[j])) - BIAS_MASTER  )/time_list[j] - DARK_MASTER),FLAT_MASTER))  )
 
 		#Cut image
 		cal_x_1,cal_x_2,cal_y_1,cal_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
 		#Selection of combining method
 		combining_method=combining.get()
 		
-		if combining_method=='average':
-			MASTER_IMAGE=np.mean(cal_data,axis=2)
-			print(np.shape(MASTER_IMAGE))
-			MASTER_IMAGE_std=np.std(cal_data,axis=2)
-			print(MASTER_IMAGE)
-		elif combining_method=='median':
-			MASTER_IMAGE=np.median(cal_data,axis=2)
-			print(np.shape(MASTER_IMAGE))
-			MASTER_IMAGE_std=np.std(cal_data,axis=2)
-			print(MASTER_IMAGE)
+		if len(cal_images)>1:
+			if combining_method=='average':
+				MASTER_IMAGE=np.mean(cal_data,axis=2)
+				MASTER_IMAGE_std=np.std(cal_data,axis=2)
+			elif combining_method=='median':
+				MASTER_IMAGE=np.median(cal_data,axis=2)
+				MASTER_IMAGE_std=np.std(cal_data,axis=2)
+		else:
+			MASTER_IMAGE=cal_data
+			MASTER_IMAGE_std=np.zeros((10,10))
+			print('only one image has been founded')
+			
 		MAX_MASTER_IMAGE=max(np.amax(MASTER_IMAGE,axis=0))
 		MIN_MASTER_IMAGE=min(np.amin(MASTER_IMAGE,axis=0))
 		MAX_MASTER_IMAGE_std=max(np.amax(MASTER_IMAGE_std,axis=0))
@@ -187,14 +214,29 @@ def CALIBRATION_IMAGES(self,master):
 		self.canvas.draw()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	
-		#toolbar = NavigationToolbar2Tk(canvas, master)
-		#toolbar.update()
+		toolbar = NavigationToolbar2Tk(self.canvas, master)
+		toolbar.update()
+		
+		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		#plt.show()
 		
+		#display information
+		print('\n \n Calibrated image')
+		print('------------')
+		print('average= (', np.mean(MASTER_IMAGE),')')
+		print('standard deviation= (', np.std(MASTER_IMAGE),')')
+		print('max= (', max(np.amax(MASTER_IMAGE,axis=0)),')')
+		print('min= (', min(np.amin(MASTER_IMAGE,axis=0)),')')
+		print('size=',np.shape(MASTER_IMAGE)[0],'X',np.shape(MASTER_IMAGE)[1])
+		
 	def cal_std(*event):
 		#destroy previous canvas to save memory
+		try:
+			_=self.canvas.toolbar.destroy()
+		except:
+			pass
 		try:
 			_=self.canvas.get_tk_widget().destroy()
 		except:
@@ -220,8 +262,10 @@ def CALIBRATION_IMAGES(self,master):
 		self.canvas.draw()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	
-		#toolbar = NavigationToolbar2Tk(canvas, master)
-		#toolbar.update()
+		toolbar = NavigationToolbar2Tk(self.canvas, master)
+		toolbar.update()
+		
+		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		#plt.show()
@@ -237,11 +281,17 @@ def CALIBRATION_IMAGES(self,master):
 	self.Canvas_text.place(x=400,y=100)
 	self.canvas = FigureCanvasTkAgg(fig, master=master)  # A tk.DrawingArea.
 	self.canvas.draw()
-	#toolbar = NavigationToolbar2Tk(canvas, master)
-	#toolbar.update()
 	self.canvas.get_tk_widget().place(x=400,y=150)
 	
-
+	toolbar = NavigationToolbar2Tk(self.canvas, master)
+	toolbar.update()
+		
+	self.canvas.toolbar.place(x=900,y=430)
+	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
+	self.canvas.get_tk_widget().place(x=400,y=150)
+	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
+	self.toolbar_text.pack()
+	self.toolbar_text.place(x=900,y=400)
 
 	combining = StringVar(master)
 	combining.set("average") # initial value
@@ -277,7 +327,7 @@ def CALIBRATION_IMAGES(self,master):
 	self.show_std_button.pack()
 	self.show_std_button.place(x=180,y=590)
 	
-	self.ZOOM_text=Label(master,text='Image zoom',width=40,bg='grey')
+	self.ZOOM_text=Label(master,text='Crop image',width=40,bg='grey')
 	self.ZOOM_text.pack()
 	self.ZOOM_text.place(x=900,y=470)
 	
