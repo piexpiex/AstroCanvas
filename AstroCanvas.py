@@ -5,6 +5,7 @@ from modes.BIAS import *
 from modes.DARKS import *
 from modes.FLATS import *
 from modes.CALIBRATION import *
+from modes.SPECTRAL_ARCS import *
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 from matplotlib.colors import BoundaryNorm
@@ -39,10 +40,10 @@ class App:
 		
 		#Select theme
 		def _theme(*event):       #colores de los botones y de las letras
-			if theme.get()=='normal':
+			if theme.get()=='white':
 				logo_color='white'
 				color='white'
-			elif theme.get()=='night':
+			elif theme.get()=='black':
 				logo_color='black'
 				color='black'
 			elif theme.get()=='blue':
@@ -51,14 +52,14 @@ class App:
 			self.basic_Logo.config(width=1200,height=60,bg=logo_color)
 			master.configure(bg=color)
 		theme = StringVar(master)
-		theme.set("nocturno") # initial value
+		theme.set("black") # initial value
 		self.basic_theme_text=Label(master,text='Color scheme',width=10,bg='grey') #or theme
 		self.basic_theme_text.pack()
-		self.basic_theme_text.place(x=10,y=100)
-		self.basic_theme_get = OptionMenu(master, theme, 'normal', 'nocturno','blue')
-		self.basic_theme_get.config(width=10,bg='grey',highlightthickness=0)
+		self.basic_theme_text.place(x=10,y=100,height=25)
+		self.basic_theme_get = OptionMenu(master, theme, 'white', 'black','blue')
+		self.basic_theme_get.config(width=15,bg='grey',highlightthickness=0)
 		self.basic_theme_get.pack()
-		self.basic_theme_get.place(x=100,y=100)
+		self.basic_theme_get.place(x=100,y=100,height=25)
 		theme.trace('w',_theme)
 
 		#Select mode 
@@ -67,17 +68,21 @@ class App:
 		mode.set("grey images") # initial value
 		self.basic_mode_text=Label(master,text='Mode',width=10,bg='grey')
 		self.basic_mode_text.pack()
-		self.basic_mode_text.place(x=10,y=150)
-		self.basic_mode_get = OptionMenu(master, mode,'bias','darks','flats','espectral arcs','image calibration', 'rgb images', 'grey images')
-		self.basic_mode_get.config(width=10,bg='grey',highlightthickness=0)
+		self.basic_mode_text.place(x=10,y=150,height=25)
+		self.basic_mode_get = OptionMenu(master, mode,'bias','darks','flats','image reduction','espectral arcs', 'rgb images', 'grey images')
+		self.basic_mode_get.config(width=15,bg='grey',highlightthickness=0)
 		self.basic_mode_get.pack()
-		self.basic_mode_get.place(x=100,y=150)
+		self.basic_mode_get.place(x=100,y=150,height=25)
 
 		def destroy_app(self):
 			for var in vars(self):
 				if var[0:5]=='basic':
 					continue
 				elif var[0:6]=='canvas':
+					try:
+						_=self.canvas.toolbar.destroy()
+					except:
+						pass
 					_=self.canvas.get_tk_widget().destroy()
 				else:
 					exec('self.'+var+'.destroy()')
@@ -92,9 +97,12 @@ class App:
 			elif mode.get()=='flats':
 				_=destroy_app(self)
 				_=FLAT_IMAGES(self,master)
-			elif mode.get()=='image calibration':
+			elif mode.get()=='image reduction':
 				_=destroy_app(self)
 				_=CALIBRATION_IMAGES(self,master)
+			elif mode.get()=='espectral arcs':
+				_=destroy_app(self)
+				_=SPECTRAL_ARCS(self,master)
 			elif mode.get()=='rgb images':
 				_=destroy_app(self)
 				_=RGB_IMAGES(self,master)
@@ -117,6 +125,10 @@ class App:
 			if var[0:5]=='basic':
 				continue
 			elif var[0:6]=='canvas':
+				try:
+					_=self.canvas.toolbar.destroy()
+				except:
+					pass
 				_=self.canvas.get_tk_widget().destroy()
 			else:
 				print('self.'+var+'.destroy()')
