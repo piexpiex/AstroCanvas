@@ -273,7 +273,7 @@ def DARK_IMAGES(self,master):
 	combining = StringVar(master)
 	combining.set("average") # initial value
 
-	self.combining_text=Label(master,text='Combining method',width=20,bg='grey')
+	self.combining_text=Label(master,text='Combining images',width=20,bg='grey')
 	self.combining_text.pack()
 	self.combining_text.place(x=10,y=300,height=30)
 	self.combining_get = OptionMenu(master, combining, 'average', 'median')
