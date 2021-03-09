@@ -5,9 +5,9 @@ It includes basic calibration operations like Bias, darks and Flats corrections 
 
 The Astrocanvas app is in development. Therefore currently is only available the scripst version.
 
-see the official documentation at: *[https://readthedocs.org/projects/cafos-photometry-calibrator][1]*
+see the official documentation at: *[https://readthedocs.org/projects/astrocanvas][1]*
 
-see the official repository at: *[https://github.com/piexpiex/CFC][2]*
+see the official repository at: *[https://github.com/piexpiex/AstroCanvas][2]*
 
 [1]: https://readthedocs.org/projects/astrocanvas/
 
