@@ -2,7 +2,8 @@
 
 <p align="center">
 <img src="configuration/Logo.gif" width=300>
-<\p>
+
+
 
 Application designed for the calibration of astronomical images and scientific analysis through a graphical interface.
 
