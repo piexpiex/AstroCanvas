@@ -1,6 +1,6 @@
 # AstroCanvas
 
-<img src="configuration/Logo.gif" width=100>
+<img src="configuration/Logo.gif" width=500>
 
 Application designed for the calibration of astronomical images and scientific analysis through a graphical interface.
 
