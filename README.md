@@ -1,4 +1,7 @@
 # AstroCanvas
+
+<img src="configuration/Logo.gif" width=100>
+
 Application designed for the calibration of astronomical images and scientific analysis through a graphical interface.
 
 It includes basic calibration operations like Bias, darks and Flats corrections and reduction. In addition it includes some modes to perform scientific plots, e.g. RGB images or lightcurves.
