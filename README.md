@@ -10,7 +10,7 @@ Application designed for the calibration of astronomical images and scientific a
 It includes basic calibration operations like Bias, darks and Flats corrections and reduction. In addition it includes some modes to perform scientific plots, e.g. RGB images or lightcurves.
 
 <p align="center">
-<img src="docs/figures/fig7.png" width=300>
+<img src="docs/figures/fig6.png" width=300>
 
 The Astrocanvas app is in development. Therefore currently is only available the scripst version.
 
