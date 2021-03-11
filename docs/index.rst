@@ -12,11 +12,22 @@ The main goal is provide an easy solution for the basic astronomical data manage
 
 Astrocanvas has been written in Python, especially with the libraries Tkinter, Astropy and matplotlib, a knowledge of them could be useful but not neccessary, it is expectad that this documentation will be a complete explanation about the operation of Astrocanvas.
 
-.. CFC is in the same project as `filabres <https://filabres.readthedocs.io/en/latest/>`_   and is still under development
+xxxxxxxxxxxx CFC is in the same project as `filabres <https://filabres.readthedocs.io/en/latest/>`_   and is still under development
 (provisional version available at `https://github.com/piexpiex/CFC <https://github.com/piexpiex/CFC>`_).
 
 .. toctree::
    :maxdepth: 2
 
    Download_and_first_steps
-   Bias_darks_and_flats
+   Bias
+   Darks
+   Flats
+   Image_reduction
+   Spectral_arcs
+   Spectra
+   Lightcurve
+   RGB_image
+   Grey_image
+   Contour_map
+   References
+
