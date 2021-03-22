@@ -9,7 +9,7 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
-def BIAS_IMAGES(self,master):
+def LIGHTCURVE(self,master):
 	#-------estimation of master bias image----------
 	
 	
@@ -100,6 +100,10 @@ def BIAS_IMAGES(self,master):
 		#toolbar.update()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
+		try:
+			plt.close(fig)
+		except:
+			pass
 		#plt.show()
 		
 	def bias_std(*event):
@@ -130,6 +134,10 @@ def BIAS_IMAGES(self,master):
 		#toolbar.update()
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
+		try:
+			plt.close(fig)
+		except:
+			pass
 		#plt.show()
 
 	fig, ax = plt.subplots()
@@ -175,7 +183,7 @@ def BIAS_IMAGES(self,master):
 	self.image_name.pack()
 	self.image_name.place(x=560,y=620,width=200,height=30)
 	
-	self.combining_button=Button(master,text='Make master bias',width=20,command=bias_image,bg='grey')
+	self.combining_button=Button(master,text='Make master bias',width=20,command=LIGHTCURVE,bg='grey')
 	self.combining_button.pack()
 	self.combining_button.place(x=10,y=590)
 	

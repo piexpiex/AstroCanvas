@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 from astropy.modeling import models, fitting
 
 def SPECTRAL_ARCS(self,master):
-	#-------Calibration of astronomical images----------
+	#-------Calibration of spectral arcs----------
 	
 	self.FIT_IMAGES_text=Label(master,text='Fit lines',width=40,bg='grey')
 	self.FIT_IMAGES_text.pack()
@@ -147,8 +147,10 @@ def SPECTRAL_ARCS(self,master):
 				arc_data=np.dstack((arc_data,np.array(read_image(arc_images[j])))) 
 
 		#Cut image
-		arc_x_1,arc_x_2,arc_y_1,arc_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
-		
+		try:
+			arc_x_1,arc_x_2,arc_y_1,arc_y_2=int(self.Ymin_value.get()),int(self.Ymax_value.get()),int(self.Xmin_value.get()),int(self.Xmax_value.get())
+		except:
+			pass
 		
 		#Selection of combining method
 		combining_method=combining.get()
@@ -180,6 +182,21 @@ def SPECTRAL_ARCS(self,master):
 			else:
 				MASTER_IMAGE=np.median(arc_data,axis=0)
 				MASTER_IMAGE_std=np.std(arc_data,axis=0)
+		try:
+			if turn=='yes':
+				MASTER_IMAGE=MASTER_IMAGE[int(arc_x_1):int(arc_x_2)]#,int(arc_y_1):int(arc_y_2)
+				pixel_base=np.linspace(arc_x_1,arc_x_2-1,arc_x_2-arc_x_1)
+				min_pixel=arc_x_1
+			else:
+				MASTER_IMAGE=MASTER_IMAGE[int(arc_y_1):int(arc_y_2)]#,int(arc_y_1):int(arc_y_2)
+				pixel_base=np.linspace(arc_y_1,arc_y_2-1,arc_y_2-arc_y_1)
+				min_pixel=arc_y_1
+		except:
+			pixel_base=np.linspace(0,len(MASTER_IMAGE)-1,len(MASTER_IMAGE))
+			min_pixel=0
+		
+		
+		
 				
 		try:
 			mean=float(self.mean_get.get())
@@ -204,17 +221,15 @@ def SPECTRAL_ARCS(self,master):
 		
 		function=function_model.get()
 		#fit a spectral line
-		
 		try:
 			if type(mean)==float:
 				if function=='gaussian':
 					g_init=models.Gaussian1D(amplitude=intensity,mean=mean,stddev=fwhm/2.35)+models.Const1D(amplitude=background)
 					fit_g=fitting.LevMarLSQFitter()
-					pixel_base=np.linspace(0,len(MASTER_IMAGE)-1,len(MASTER_IMAGE))
-					g=fit_g(g_init,pixel_base[int(mean-3*fwhm):int(mean+3*fwhm)],MASTER_IMAGE[int(mean-3*fwhm):int(mean+3*fwhm)])
+					g=fit_g(g_init,pixel_base[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)],MASTER_IMAGE[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)])
 					intensity,fwhm,mean,background=g[0].amplitude[0],g[0].stddev[0]*2.35,g[0].mean[0],g[1].amplitude[0]
 					#display information
-					print('\n \n Espectral line')
+					print('\n \n spectral line')
 					print('------------')
 					print('Type gaussian')
 					print('Intensity = (', g[0].amplitude[0],')')
@@ -223,32 +238,26 @@ def SPECTRAL_ARCS(self,master):
 					print('Background =(',g[1].amplitude[0],')')
 					print('wavelength =(',wavelength,')')
 				elif function=='voigt':
-					print('jk')
 					g_init=models.Voigt1D(x_0=mean,amplitude_L=intensity,fwhm_L=fwhm/2,fwhm_G=fwhm/2)+models.Const1D(amplitude=background)
 					fit_g=fitting.LevMarLSQFitter()
-					print('a')
-					pixel_base=np.linspace(0,len(MASTER_IMAGE)-1,len(MASTER_IMAGE))
-					print('b')
-					g=fit_g(g_init,pixel_base[int(mean-3*fwhm):int(mean+3*fwhm)],MASTER_IMAGE[int(mean-3*fwhm):int(mean+3*fwhm)])
-					print('c')
+					g=fit_g(g_init,pixel_base[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)],MASTER_IMAGE[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)])
 					intensity,fwhm,mean,background=g[0].amplitude_L[0],g[0].fwhm_L/2+(g[0].fwhm_L/4+g[0].fwhm_G)**0.5,g[0].x_0[0],g[1].amplitude[0]
 					#display information
-					print('\n \n Espectral line')
+					print('\n \n spectral line')
 					print('------------')
 					print('Type voigt')
 					print('Intensity = (', g[0](g[0].x_0),')')
 					print('Fwhm = (',g[0].fwhm_L/2+(g[0].fwhm_L/4+g[0].fwhm_G)**0.5,')')
 					print('central pixel = (',g[0].x_0[0],')')
-					print('Background =(',g[1].amplitude,')')
+					print('Background =(',g[1].amplitude[0],')')
 					print('wavelength =(',wavelength,')')
 				elif function=='lorentz':
 					g_init=models.Lorentz1D(amplitude=intensity,x_0=mean,fwhm=fwhm)+models.Const1D(amplitude=background)
 					fit_g=fitting.LevMarLSQFitter()
-					pixel_base=np.linspace(0,len(MASTER_IMAGE)-1,len(MASTER_IMAGE))
-					g=fit_g(g_init,pixel_base[int(mean-3*fwhm):int(mean+3*fwhm)],MASTER_IMAGE[int(mean-3*fwhm):int(mean+3*fwhm)])
+					g=fit_g(g_init,pixel_base[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)],MASTER_IMAGE[int(mean-3*fwhm-min_pixel):int(mean+3*fwhm-min_pixel)])
 					intensity,fwhm,mean,background=g[0].amplitude[0],g[0].fwhm[0],g[0].x_0[0],g[1].amplitude[0]
 					#display information
-					print('\n \n Espectral line')
+					print('\n \n spectral line')
 					print('------------')
 					print('Type lorentz')
 					print('Intensity = (', g[0].amplitude[0],')')
@@ -262,11 +271,16 @@ def SPECTRAL_ARCS(self,master):
 	
 		fig, ax = plt.subplots()
 		#axoff_fun(ax)
-		ax.plot(MASTER_IMAGE,'g')
+		ax.plot(pixel_base,MASTER_IMAGE,'g')
 		try:
 			ax.plot(pixel_base,g(pixel_base),'b')
 		except:
 			pass
+			
+		ax.set_xlabel('pixel')
+		ax.yaxis.set_label_position('right')
+		ax.xaxis.set_label_position('top')
+		ax.set_ylabel('Intensity (counts)')
 
 		fig.set_size_inches(4.5,4.5)
 		
@@ -282,6 +296,10 @@ def SPECTRAL_ARCS(self,master):
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
+		try:
+			plt.close(fig)
+		except:
+			pass
 		#plt.show()
 
 	fig, ax = plt.subplots()
@@ -303,6 +321,10 @@ def SPECTRAL_ARCS(self,master):
 	self.canvas.toolbar.place(x=900,y=430)
 	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	self.canvas.get_tk_widget().place(x=400,y=150)
+	try:
+		plt.close(fig)
+	except:
+		pass
 	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
 	self.toolbar_text.pack()
 	self.toolbar_text.place(x=900,y=400)
@@ -337,7 +359,6 @@ def SPECTRAL_ARCS(self,master):
 		global wavelength
 		
 		
-		print(name,intensity,mean,fwhm,background,wavelength)
 		
 		try:
 			#lectura fichero
@@ -384,7 +405,6 @@ def SPECTRAL_ARCS(self,master):
 			
 			pixel_base=np.linspace(int(min(mean_array)),int(max(mean_array))-1,1000)
 			g=fit_g(g_init,mean_array,wavelength_array)
-			print(g)
 			
 		except:
 			print('no file avalaible with name', name+'.fits')
@@ -397,7 +417,9 @@ def SPECTRAL_ARCS(self,master):
 			ax.plot(mean_array,wavelength_array,'b*',markersize=5)
 			ax.errorbar(mean_array,wavelength_array,yerr=fwhm_array/5,fmt='bo',markersize=5)
 			ax.set_xlabel('pixel')
-			ax.set_ylabel('Wavelength (nm)')
+			ax.set_ylabel('Wavelength')
+			ax.yaxis.set_label_position('right')
+			ax.xaxis.set_label_position('top')
 
 		except:
 			pass
@@ -416,6 +438,10 @@ def SPECTRAL_ARCS(self,master):
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
+		try:
+			plt.close(fig)
+		except:
+			pass
 		#plt.show()
 		
 		
@@ -428,7 +454,7 @@ def SPECTRAL_ARCS(self,master):
 	self.curve_name.pack()
 	self.curve_name.place(x=560,y=620,width=200,height=30)
 	
-	self.combining_button=Button(master,text='Make image',width=20,command=arc_image,bg='grey')
+	self.combining_button=Button(master,text='Make spectra',width=20,command=arc_image,bg='grey')
 	self.combining_button.pack()
 	self.combining_button.place(x=10,y=590)
 	

@@ -46,26 +46,25 @@ def RGB_IMAGES(self,master):
 	self.green_text.pack()
 	self.green_text.place(x=10,y=530)
 	self.g_get=Entry(master,bg='green',width=40)
-	self.g_get.insert(0,'Filter_i-0-.fits')
+	self.g_get.insert(0,'Filter_z-0-.fits')
 	self.g_get.pack()
 	self.g_get.place(x=90,y=530)
 	self.blue_text=Label(master,text='blue image',width=10,bg='grey')
 	self.blue_text.pack()
 	self.blue_text.place(x=10,y=560)
 	self.b_get=Entry(master,bg='blue',width=40)
-	self.b_get.insert(0,'Filter_i-0-.fits')
+	self.b_get.insert(0,'Filter_g-0-~1.fits')
 	self.b_get.pack()
 	self.b_get.place(x=90,y=560)
 	
 	#Fit images
-	def rgb(*event):
-		print('a')
+	
 	self.FIT_IMAGES_text=Label(master,text='Fit images',width=40,bg='grey')
 	self.FIT_IMAGES_text.pack()
 	self.FIT_IMAGES_text.place(x=900,y=200)
 	
 	
-	self.red_X_text=Label(master,text='X min',bg='grey')
+	self.red_X_text=Label(master,text='r(X0)',bg='grey')
 	self.red_X_text.pack()
 	self.red_X_text.place(x=900,y=230,width=60,height=25)
 	self.red_X_value=Entry(master,bg='grey')
@@ -73,7 +72,7 @@ def RGB_IMAGES(self,master):
 	self.red_X_value.pack()
 	self.red_X_value.place(x=975,y=230,width=60,height=25)
 	
-	self.red_Y_text=Label(master,text='X max',bg='grey')
+	self.red_Y_text=Label(master,text='R(Y0)',bg='grey')
 	self.red_Y_text.pack()
 	self.red_Y_text.place(x=1050,y=230,width=60,height=25)
 	self.red_Y_value=Entry(master,bg='grey')
@@ -81,7 +80,7 @@ def RGB_IMAGES(self,master):
 	self.red_Y_value.pack()
 	self.red_Y_value.place(x=1125,y=230,width=60,height=25)
 	
-	self.green_X_text=Label(master,text='X min',bg='grey')
+	self.green_X_text=Label(master,text='G(X0)',bg='grey')
 	self.green_X_text.pack()
 	self.green_X_text.place(x=900,y=260,width=60,height=25)
 	self.green_X_value=Entry(master,bg='grey')
@@ -89,7 +88,7 @@ def RGB_IMAGES(self,master):
 	self.green_X_value.pack()
 	self.green_X_value.place(x=975,y=260,width=60,height=25)
 	
-	self.green_Y_text=Label(master,text='X max',bg='grey')
+	self.green_Y_text=Label(master,text='G(Y0)',bg='grey')
 	self.green_Y_text.pack()
 	self.green_Y_text.place(x=1050,y=260,width=60,height=25)
 	self.green_Y_value=Entry(master,bg='grey')
@@ -97,7 +96,7 @@ def RGB_IMAGES(self,master):
 	self.green_Y_value.pack()
 	self.green_Y_value.place(x=1125,y=260,width=60,height=25)
 	
-	self.blue_X_text=Label(master,text='X min',bg='grey')
+	self.blue_X_text=Label(master,text='B(X0)',bg='grey')
 	self.blue_X_text.pack()
 	self.blue_X_text.place(x=900,y=290,width=60,height=25)
 	self.blue_X_value=Entry(master,bg='grey')
@@ -105,7 +104,7 @@ def RGB_IMAGES(self,master):
 	self.blue_X_value.pack()
 	self.blue_X_value.place(x=975,y=290,width=60,height=25)
 	
-	self.blue_Y_text=Label(master,text='X max',bg='grey')
+	self.blue_Y_text=Label(master,text='B(Y0)',bg='grey')
 	self.blue_Y_text.pack()
 	self.blue_Y_text.place(x=1050,y=290,width=60,height=25)
 	self.blue_Y_value=Entry(master,bg='grey')
@@ -184,9 +183,9 @@ def RGB_IMAGES(self,master):
 		qa_float=float(qa)
 		
 		#esto es lo que habria que quitar########################################################################
-		r=r[200:900,500:1000]
-		g=g#[100:900,300:1000]
-		b=b[200:900,200:900]
+		r=r#[200:900,500:1000]
+		g=g#[0:1300,0:2000]
+		b=b#[100:1300,200:2000]
 		
 		
 		autofit=str(self.AUTO_FIT_value.get())  #'no'
@@ -221,22 +220,94 @@ def RGB_IMAGES(self,master):
 			r=r_copy
 			g=g_copy
 			b=b_copy
-			print('lkl')
 			
 		
 		
 		#AUTOFIT
 		if autofit=='yes':
-			y, x = np.mgrid[0:500,0:500]
-			cd=plt.contour(x,y,r[0:500,0:500],np.array([24.8,25,25.4,25.8,26.2,27,28]),alpha=0.5) 
-			print(cd)
 			#identificación de los puntos en las imagenes para realizar el ajuste
-			# los x e y van al reves en las matrices
+			
+			#puntos de la imagen r
+			posiciones_x_r_bajo=np.array([])
+			posiciones_y_r_bajo=np.array([])
+			posiciones_x_r_alto=np.array([])
+			posiciones_y_r_alto=np.array([])
+			y, x = np.mgrid[0:np.shape(r)[0],0:np.shape(r)[1]]
+			cd=plt.contour(x,y,r,max(np.amax(r,axis=0))*np.array([0.7,0.95]),alpha=0.5)
 			
 			
-			red_x_2,red_y_2=0,0
-			green_x_2,green_y_2=0,0
-			blue_x_2,blue_y_2=0,0
+			for k in range(len(cd.allsegs[0])):
+				curva_x=cd.allsegs[0][k]
+				posicion_x_r=np.mean(curva_x[:,0])
+				posicion_y_r=np.mean(curva_x[:,1])
+				posiciones_x_r_bajo=np.append(posiciones_x_r_bajo,posicion_x_r)
+				posiciones_y_r_bajo=np.append(posiciones_y_r_bajo,posicion_y_r)
+			for k in range(len(cd.allsegs[1])):
+				curva_x=cd.allsegs[1][k]
+				posicion_x_r=np.mean(curva_x[:,0])
+				posicion_y_r=np.mean(curva_x[:,1])
+				posiciones_x_r_alto=np.append(posiciones_x_r_alto,posicion_x_r)
+				posiciones_y_r_alto=np.append(posiciones_y_r_alto,posicion_y_r)
+
+			#puntos de la imagen g
+			posiciones_x_g_bajo=np.array([])
+			posiciones_y_g_bajo=np.array([])
+			posiciones_x_g_alto=np.array([])
+			posiciones_y_g_alto=np.array([])
+			y, x = np.mgrid[0:np.shape(g)[0],0:np.shape(g)[1]]
+			cd=plt.contour(x,y,g,max(np.amax(g,axis=0))*np.array([0.7,0.95]),alpha=0.5)
+			
+			
+			for k in range(len(cd.allsegs[0])):
+				curva_x=cd.allsegs[0][k]
+				posicion_x_g=np.mean(curva_x[:,0])
+				posicion_y_g=np.mean(curva_x[:,1])
+				posiciones_x_g_bajo=np.append(posiciones_x_g_bajo,posicion_x_g)
+				posiciones_y_g_bajo=np.append(posiciones_y_g_bajo,posicion_y_g)
+			for k in range(len(cd.allsegs[1])):
+				curva_x=cd.allsegs[1][k]
+				posicion_x_g=np.mean(curva_x[:,0])
+				posicion_y_g=np.mean(curva_x[:,1])
+				posiciones_x_g_alto=np.append(posiciones_x_g_alto,posicion_x_g)
+				posiciones_y_g_alto=np.append(posiciones_y_g_alto,posicion_y_g)
+			
+			#puntos de la imagen b
+			posiciones_x_b_bajo=np.array([])
+			posiciones_y_b_bajo=np.array([])
+			posiciones_x_b_alto=np.array([])
+			posiciones_y_b_alto=np.array([])
+			y, x = np.mgrid[0:np.shape(b)[0],0:np.shape(b)[1]]
+			cd=plt.contour(x,y,b,max(np.amax(b,axis=0))*np.array([0.7,0.95]),alpha=0.5)
+			
+			
+			for k in range(len(cd.allsegs[0])):
+				curva_x=cd.allsegs[0][k]
+				posicion_x_b=np.mean(curva_x[:,0])
+				posicion_y_b=np.mean(curva_x[:,1])
+				posiciones_x_b_bajo=np.append(posiciones_x_b_bajo,posicion_x_b)
+				posiciones_y_b_bajo=np.append(posiciones_y_b_bajo,posicion_y_b)
+			for k in range(len(cd.allsegs[1])):
+				curva_x=cd.allsegs[1][k]
+				posicion_x_b=np.mean(curva_x[:,0])
+				posicion_y_b=np.mean(curva_x[:,1])
+				posiciones_x_b_alto=np.append(posiciones_x_b_alto,posicion_x_b)
+				posiciones_y_b_alto=np.append(posiciones_y_b_alto,posicion_y_b)
+			
+			#ajuste
+			
+			X_R_G=np.mean(posiciones_x_r_bajo)+np.mean(posiciones_x_r_alto)-np.mean(posiciones_x_g_bajo)-np.mean(posiciones_x_g_alto)
+			Y_R_G=np.mean(posiciones_y_r_bajo)+np.mean(posiciones_y_r_alto)-np.mean(posiciones_y_g_bajo)-np.mean(posiciones_y_g_alto)
+			X_G_B=np.mean(posiciones_x_g_bajo)+np.mean(posiciones_x_g_alto)-np.mean(posiciones_x_b_bajo)-np.mean(posiciones_x_b_alto)
+			Y_G_B=np.mean(posiciones_y_g_bajo)+np.mean(posiciones_y_g_alto)-np.mean(posiciones_y_b_bajo)-np.mean(posiciones_y_b_alto)
+			X_R_B=np.mean(posiciones_x_r_bajo)+np.mean(posiciones_x_r_alto)-np.mean(posiciones_x_b_bajo)-np.mean(posiciones_x_b_alto)
+			Y_R_B=np.mean(posiciones_y_r_bajo)+np.mean(posiciones_y_r_alto)-np.mean(posiciones_y_b_bajo)-np.mean(posiciones_y_b_alto)
+
+			#colocacion de las imagenes
+			
+			
+			red_x_2,red_y_2=0,0     # los x e y van al reves en estos valores
+			green_x_2,green_y_2=int((X_G_B-X_R_G-X_R_B)/2),int((Y_G_B-Y_R_G-Y_R_B)/2)
+			blue_x_2,blue_y_2=int((-X_G_B-X_R_G-X_R_B)/2),int((-Y_G_B-Y_R_G-Y_R_B)/2)
 			
 			self.red_X_value.delete(0,'end')
 			self.red_Y_value.delete(0,'end')
@@ -244,12 +315,12 @@ def RGB_IMAGES(self,master):
 			self.green_Y_value.delete(0,'end')
 			self.blue_X_value.delete(0,'end')
 			self.blue_Y_value.delete(0,'end')
-			self.red_X_value.insert(0,str(red_x_2))
-			self.red_Y_value.insert(0,str(red_y_2))
-			self.green_X_value.insert(0,str(green_x_2))
-			self.green_Y_value.insert(0,str(green_y_2))
-			self.blue_X_value.insert(0,str(blue_x_2))
-			self.blue_Y_value.insert(0,str(blue_y_2))
+			self.red_X_value.insert(0,str(red_y_2))
+			self.red_Y_value.insert(0,str(red_x_2))
+			self.green_X_value.insert(0,str(green_y_2))
+			self.green_Y_value.insert(0,str(green_x_2))
+			self.blue_X_value.insert(0,str(blue_y_2))
+			self.blue_Y_value.insert(0,str(blue_x_2))
 			
 			base_x=min(red_x_2,green_x_2,blue_x_2)
 			base_y=min(red_y_2,green_y_2,blue_y_2)
@@ -292,18 +363,22 @@ def RGB_IMAGES(self,master):
 			
 		#Normalization of each image and plotting
 		r_max=max(np.amax(r,axis=0))
-		r=r/r_max
+		if abs(r_max)>0.001:
+			r=r/r_max
 		
 		#g=g[g_x_1:g_x_2,g_y_1:g_y_2]
 		g_max=max(np.amax(g,axis=0))
-		g=g/g_max
-		
+		if abs(g_max)>0.001:
+			g=g/g_max
 		#b=b[b_x_1:b_x_2,b_y_1:b_y_2]
 		b_max=max(np.amax(b,axis=0))
-		b=b/b_max
+		if abs(b_max)>0.001:
+			b=b/b_max
+		
 	
 		rgb = make_lupton_rgb(r,g,b,minimum=0, Q=qa_float, stretch=st_float) #, filename="imagen_rgb.jpeg"
 		fig, ax = plt.subplots()
+		#plt.subplots_adjust(left=0.0, bottom=0.0, right=0.95, top=0.95, wspace=0.5, hspace=None)
 		axoff_fun(ax)
 		im = ax.imshow(rgb, interpolation='nearest', cmap='gray', origin='lower')
 		fig.set_size_inches(4.5,4.5)
@@ -320,6 +395,11 @@ def RGB_IMAGES(self,master):
 		self.canvas.get_tk_widget().place(x=400,y=150)
 		
 		rgb_mean=np.mean(rgb,axis=2)
+		
+		try:
+			plt.close(fig)
+		except:
+			pass
 		
 		#display information
 		print('\n \n RGB image')
@@ -349,6 +429,12 @@ def RGB_IMAGES(self,master):
 	self.canvas.toolbar.place(x=900,y=430)
 	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	self.canvas.get_tk_widget().place(x=400,y=150)
+	
+	try:
+		plt.close(fig)
+	except:
+		pass
+			
 	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
 	self.toolbar_text.pack()
 	self.toolbar_text.place(x=900,y=400)

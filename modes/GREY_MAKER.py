@@ -94,6 +94,7 @@ def GREY_IMAGES(self,master):
 		grey_max=max(np.amax(grey,axis=0))
 		grey=grey/grey_max
 		
+		
 		rgb = make_lupton_rgb(grey,grey,grey,minimum=0, Q=qa_float, stretch=st_float) #, filename="imagen_rgb.jpeg"
 		fig, ax = plt.subplots()
 		axoff_fun(ax)
@@ -110,6 +111,11 @@ def GREY_IMAGES(self,master):
 		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
+		
+		try:
+			plt.close(fig)
+		except:
+			pass
 		#plt.show()
 		
 		
@@ -142,6 +148,11 @@ def GREY_IMAGES(self,master):
 	self.canvas.toolbar.place(x=900,y=430)
 	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	self.canvas.get_tk_widget().place(x=400,y=150)
+	
+	try:
+		plt.close(fig)
+	except:
+		pass
 	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
 	self.toolbar_text.pack()
 	self.toolbar_text.place(x=900,y=400)

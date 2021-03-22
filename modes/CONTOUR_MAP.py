@@ -9,20 +9,27 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationTool
 from matplotlib.backend_bases import key_press_handler
 from matplotlib.figure import Figure
 
-def BIAS_IMAGES(self,master):
+def CONTOUR_MAP(self,master):
 	#-------estimation of master bias image----------
 	
 	
-	self.MASTER_BIAS_MAKER_text=Label(master,text='MASTER BIAS MAKER',width=45,bg='grey')
-	self.MASTER_BIAS_MAKER_text.pack()
-	self.MASTER_BIAS_MAKER_text.place(x=10,y=350)
-	self.BIAS_text=Label(master,text='bias images',width=10,bg='grey')
-	self.BIAS_text.pack()
-	self.BIAS_text.place(x=10,y=380)
-	self.BIAS_get=Entry(master,bg='grey',width=40)
-	self.BIAS_get.insert(0,'bias.ls')
-	self.BIAS_get.pack()
-	self.BIAS_get.place(x=90,y=380)
+	self.CONTOUR_MAP_MAKER_text=Label(master,text='CONTOUR MAP MAKER',width=45,bg='grey')
+	self.CONTOUR_MAP_MAKER_text.pack()
+	self.CONTOUR_MAP_MAKER_text.place(x=10,y=350)
+	self.CONTOUR_MAP_text=Label(master,text='images',width=10,bg='grey')
+	self.CONTOUR_MAP_text.pack()
+	self.CONTOUR_MAP_text.place(x=10,y=380)
+	self.CONTOUR_MAP_get=Entry(master,bg='grey',width=40)
+	self.CONTOUR_MAP_get.insert(0,'Filter_i-0-.fits')
+	self.CONTOUR_MAP_get.pack()
+	self.CONTOUR_MAP_get.place(x=90,y=380)
+	self.CONTOUR_MAP_levels_text=Label(master,text='levels',width=10,bg='grey')
+	self.CONTOUR_MAP_levels_text.pack()
+	self.CONTOUR_MAP_levels_text.place(x=10,y=410)
+	self.CONTOUR_MAP_levels=Entry(master,bg='grey',width=40)
+	self.CONTOUR_MAP_levels.insert(0,'0,0.5,1')
+	self.CONTOUR_MAP_levels.pack()
+	self.CONTOUR_MAP_levels.place(x=90,y=410)
 
 	def read_image(image):
 		try:
@@ -47,6 +54,19 @@ def BIAS_IMAGES(self,master):
 			while A[len(A)-1]==' ' and len(A)>1:
 				A=A[0:len(A)-1]
 		return(A)
+	def lister(A):
+		lista=[]
+		word=''
+		for j in range(len(A)):
+			if A[j] ==',':
+				lista.append(word)
+				word=''
+			else:
+				word=word+A[j]
+			if j==len(A)-1:
+				lista.append(word)
+				word=''
+		return(lista)
 	def read_list(file_list):
 		if file_list[len(file_list)-4:]=='fits':
 			image_list=[file_list]
@@ -57,7 +77,7 @@ def BIAS_IMAGES(self,master):
 				linea=linea[0:len(linea)-1]
 				image_list.append(delete_space(linea))
 		return(image_list)
-	def bias_image(*event):
+	def contour_map(*event):
 		#destroy previous canvas to save memory
 		try:
 			_=self.canvas.toolbar.destroy()
@@ -67,53 +87,49 @@ def BIAS_IMAGES(self,master):
 			_=self.canvas.get_tk_widget().destroy()
 		except:
 			pass
-		global MASTER_BIAS
-		global MASTER_BIAS_std
-		global MAX_MASTER_BIAS_std
-		global MIN_MASTER_BIAS_std
-		BIAS_list=self.BIAS_get.get()
-		BIAS_images=read_list(BIAS_list)
-		for j in range(len(BIAS_images)):
+		global CONTOUR_MAP
+		CONTOUR_MAP_list=self.CONTOUR_MAP_get.get()
+		levels=lister(delete_space(self.CONTOUR_MAP_levels.get()))
+		CONTOUR_MAP_images=read_list(CONTOUR_MAP_list)
+		for j in range(len(CONTOUR_MAP_images)):
 			if j==0:
-				BIAS_data=np.array(read_image(BIAS_images[j]))
+				CONTOUR_MAP_data=np.array(read_image(CONTOUR_MAP_images[j]))
 			else:
-				BIAS_data=np.dstack((BIAS_data,np.array(read_image(BIAS_images[j]))))
+				CONTOUR_MAP_data=np.dstack((CONTOUR_MAP_data,np.array(read_image(CONTOUR_MAP_images[j]))))
 
 		#Cut image
-		BIAS_x_1,BIAS_x_2,BIAS_y_1,BIAS_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
+		CONTOUR_MAP_x_1,CONTOUR_MAP_x_2,CONTOUR_MAP_y_1,CONTOUR_MAP_y_2=self.Ymin_value.get(),self.Ymax_value.get(),self.Xmin_value.get(),self.Xmax_value.get()
 		#Selection of combining method
 		combining_method=combining.get()
 		
-		if len(BIAS_images)>1:
+		if len(CONTOUR_MAP_images)>1:
 			if combining_method=='average':
-				MASTER_BIAS=np.mean(BIAS_data,axis=2)
-				MASTER_BIAS_std=np.std(BIAS_data,axis=2)
+				CONTOUR_MAP=np.mean(CONTOUR_MAP_data,axis=2)
 			elif combining_method=='median':
-				MASTER_BIAS=np.median(BIAS_data,axis=2)
-				MASTER_BIAS_std=np.std(BIAS_data,axis=2)
+				CONTOUR_MAP=np.median(CONTOUR_MAP_data,axis=2)
 		else:
-			MASTER_BIAS=BIAS_data
-			MASTER_BIAS_std=np.zeros((10,10))
+			CONTOUR_MAP=CONTOUR_MAP_data
 			print('only one bias image has been founded')
-		MAX_MASTER_BIAS=max(np.amax(MASTER_BIAS,axis=0))
-		MIN_MASTER_BIAS=min(np.amin(MASTER_BIAS,axis=0))
-		MAX_MASTER_BIAS_std=max(np.amax(MASTER_BIAS_std,axis=0))
-		MIN_MASTER_BIAS_std=min(np.amin(MASTER_BIAS_std,axis=0))
+			
 		try:
-			MASTER_BIAS=MASTER_BIAS[int(BIAS_x_1):int(BIAS_x_2),int(BIAS_y_1):int(BIAS_y_2)]
-			MASTER_BIAS_std=MASTER_BIAS_std[int(BIAS_x_1):int(BIAS_x_2),int(BIAS_y_1):int(BIAS_y_2)]
+			CONTOUR_MAP=CONTOUR_MAP[int(CONTOUR_MAP_x_1):int(CONTOUR_MAP_x_2),int(CONTOUR_MAP_y_1):int(CONTOUR_MAP_y_2)]
 		except:
 			pass
 		
-		y, x = np.mgrid[slice(0,len(MASTER_BIAS[:,0])+1, 1) ,slice(0, len(MASTER_BIAS[0,:])+1, 1) ]
-		cmap = plt.get_cmap('hot')
+		y, x = np.mgrid[0:np.shape(CONTOUR_MAP)[0],0:np.shape(CONTOUR_MAP)[1]]
 	
-		fig, ax = plt.subplots()
-		axoff_fun(ax)
+		#fig, ax = plt.subplots()
+		#axoff_fun(ax)
+		fig=plt.figure()
+		ax=fig.add_subplot(111)
+		levels_array=np.array([])
+		for k in range(len(levels)):
+			levels_array=np.append(levels_array,float(levels[k]))
+		cd=ax.contour(x,y,CONTOUR_MAP,max(np.amax(CONTOUR_MAP,axis=0))*levels_array,alpha=0.5)
+		#im = ax.pcolormesh(x, y, MASTER_BIAS, cmap=cmap)
+		#im.set_clim(MIN_MASTER_BIAS, MAX_MASTER_BIAS)
+		#fig.colorbar(im, ax=ax)
 		
-		im = ax.pcolormesh(x, y, MASTER_BIAS, cmap=cmap)
-		im.set_clim(MIN_MASTER_BIAS, MAX_MASTER_BIAS)
-		fig.colorbar(im, ax=ax)
 
 		fig.set_size_inches(4.5,4.5)
 		
@@ -127,7 +143,6 @@ def BIAS_IMAGES(self,master):
 		self.canvas.toolbar.place(x=900,y=430)
 		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 		self.canvas.get_tk_widget().place(x=400,y=150)
-		
 		try:
 			plt.close(fig)
 		except:
@@ -135,56 +150,13 @@ def BIAS_IMAGES(self,master):
 		#plt.show()
 		
 		#display information
-		print('\n \n Bias image')
+		print('\n \n Contour map')
 		print('------------')
-		print('average= (', np.mean(MASTER_BIAS),')')
-		print('standard deviation= (', np.std(MASTER_BIAS),')')
-		print('max= (', max(np.amax(MASTER_BIAS,axis=0)),')')
-		print('min= (', min(np.amin(MASTER_BIAS,axis=0)),')')
-		print('size=',np.shape(MASTER_BIAS)[0],'X',np.shape(MASTER_BIAS)[1])
-		
-	def bias_std(*event):
-		#destroy previous canvas to save memory
-		try:
-			_=self.canvas.toolbar.destroy()
-		except:
-			pass
-		try:
-			_=self.canvas.get_tk_widget().destroy()
-		except:
-			pass
-			
-		global MASTER_BIAS_std
-		global MAX_MASTER_BIAS_std
-		global MIN_MASTER_BIAS_std
-		
-		y, x = np.mgrid[slice(0,len(MASTER_BIAS_std[:,0])+1, 1) ,slice(0, len(MASTER_BIAS_std[0,:])+1, 1) ]
-		cmap = plt.get_cmap('hot')
-	
-		fig, ax = plt.subplots()
-		axoff_fun(ax)
-		
-		im = ax.pcolormesh(x, y, MASTER_BIAS_std, cmap=cmap)
-		im.set_clim(MIN_MASTER_BIAS_std, MAX_MASTER_BIAS_std)
-		fig.colorbar(im, ax=ax)	
-		fig.set_size_inches(4.5,4.5)
-		
-		#fig.savefig('test2png.png', dpi=100)
-		self.canvas = FigureCanvasTkAgg(fig, master=master)  # A tk.DrawingArea.
-		self.canvas.draw()
-		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-	
-		toolbar = NavigationToolbar2Tk(self.canvas, master)
-		toolbar.update()
-		
-		self.canvas.toolbar.place(x=900,y=430)
-		self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
-		self.canvas.get_tk_widget().place(x=400,y=150)
-		try:
-			plt.close(fig)
-		except:
-			pass
-		#plt.show()
+		#print('average= (', np.mean(MASTER_BIAS),')')
+		#print('standard deviation= (', np.std(MASTER_BIAS),')')
+		#print('max= (', max(np.amax(MASTER_BIAS,axis=0)),')')
+		#print('min= (', min(np.amin(MASTER_BIAS,axis=0)),')')
+		print('size=',np.shape(CONTOUR_MAP)[0],'X',np.shape(CONTOUR_MAP)[1])
 
 	fig, ax = plt.subplots()
 	fig.set_size_inches(4.5, 4.5)
@@ -205,12 +177,10 @@ def BIAS_IMAGES(self,master):
 	self.canvas.toolbar.place(x=900,y=430)
 	self.canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 	self.canvas.get_tk_widget().place(x=400,y=150)
-	
 	try:
 		plt.close(fig)
 	except:
 		pass
-		
 	self.toolbar_text=Label(master,text='Toolbar',width=40,bg='grey')
 	self.toolbar_text.pack()
 	self.toolbar_text.place(x=900,y=400)
@@ -227,13 +197,13 @@ def BIAS_IMAGES(self,master):
 	self.combining_get.place(x=200,y=300,height=30)
 	
 	def save_image(*event):
-		global MASTER_BIAS
+		global CONTOUR_MAP
 		name=self.image_name.get()
-		hdu = fits.PrimaryHDU(MASTER_BIAS)
+		hdu = fits.PrimaryHDU(CONTOUR_MAP)
 		t = fits.HDUList([hdu])
 		t.writeto(name+'.fits',overwrite=True)
 	
-	self.save_image_text=Button(master,text='Save master bias as',width=20,bg='grey',command=save_image)
+	self.save_image_text=Button(master,text='Save contour map as',width=20,bg='grey',command=save_image)
 	self.save_image_text.pack()
 	self.save_image_text.place(x=400,y=620)
 	self.image_name=Entry(master,bg='grey')
@@ -241,13 +211,9 @@ def BIAS_IMAGES(self,master):
 	self.image_name.pack()
 	self.image_name.place(x=560,y=620,width=200,height=30)
 	
-	self.combining_button=Button(master,text='Make master bias',width=20,command=bias_image,bg='grey')
+	self.combining_button=Button(master,text='Make contour map',width=20,command=contour_map,bg='grey')
 	self.combining_button.pack()
 	self.combining_button.place(x=10,y=590)
-	
-	self.show_std_button=Button(master,text='Show standard deviation',width=20,command=bias_std,bg='grey')
-	self.show_std_button.pack()
-	self.show_std_button.place(x=180,y=590)
 	
 	self.ZOOM_text=Label(master,text='Crop image',width=40,bg='grey')
 	self.ZOOM_text.pack()
@@ -284,4 +250,5 @@ def BIAS_IMAGES(self,master):
 	self.Ymax_value.insert(0,'')
 	self.Ymax_value.pack()
 	self.Ymax_value.place(x=1125,y=550,width=60,height=30)
+
 
