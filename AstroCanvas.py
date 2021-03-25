@@ -141,7 +141,7 @@ class App:
 		mode.trace('w',_mode)
 
 		
-		print('aa')
+		print('Starting AstroCanvas')
 		#self.basic_destroy = Button(master,text="destroy",width=10,command=self.destroy_app,bg='grey')
 		#self.basic_destroy.pack()
 		#self.basic_destroy.place(x=1100,y=30)
