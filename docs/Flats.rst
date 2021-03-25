@@ -25,9 +25,9 @@ There is necessary to indicate the keyword of the fits heads which has the infor
    flats/flat_2.fits  90
    flats/flat_3.fits  180
 
-The master bias and master dark are indicated in the master bias entry, you can write the names on fits files or a numbers. 
+The master bias and master dark are indicated in the master bias and master dark entries respectively, you can write the names of fits files or numbers. 
 
-To obtain the master dark, press the make master bias button, after the processing, the master dark appears in the canvas.
+To obtain the master flat, press the make master flat button, after the processing, the master flat appears in the canvas.
 
 
 .. figure:: figures/fig3.png

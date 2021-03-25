@@ -1,5 +1,5 @@
-Astrocanvas's documentation
-===================
+AstroCanvas's documentation
+===========================
 
 AstroCanvas is an application designed to perform a basic data reduction of raw images and to obtain some basic scientific results (lightcurves, spectra, ect), it could be also used to get some astronomical images (like gray or rgb images).
 
