@@ -20,7 +20,7 @@ def DARK_IMAGES(self,master):
 	self.DARK_text.pack()
 	self.DARK_text.place(x=10,y=380)
 	self.DARK_get=Entry(master,bg='grey',width=40)
-	self.DARK_get.insert(0,'dark.ls')
+	self.DARK_get.insert(0,'')
 	self.DARK_get.pack()
 	self.DARK_get.place(x=90,y=380)
 	
@@ -36,7 +36,7 @@ def DARK_IMAGES(self,master):
 	self.MASTER_BIAS_text.pack()
 	self.MASTER_BIAS_text.place(x=10,y=440)
 	self.MASTER_BIAS_get=Entry(master,bg='grey',width=40)
-	self.MASTER_BIAS_get.insert(0,'BIAS.fits')
+	self.MASTER_BIAS_get.insert(0,'')
 	self.MASTER_BIAS_get.pack()
 	self.MASTER_BIAS_get.place(x=90,y=440)
 
@@ -163,7 +163,7 @@ def DARK_IMAGES(self,master):
 		else:
 			MASTER_DARK=DARK_data
 			MASTER_DARK_std=np.zeros((10,10))
-			print('only one dark image has been founded')
+			print('\n only one image has been founded')
 			
 		MAX_MASTER_DARK=max(np.amax(MASTER_DARK,axis=0))
 		MIN_MASTER_DARK=min(np.amin(MASTER_DARK,axis=0))

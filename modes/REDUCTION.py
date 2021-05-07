@@ -20,7 +20,7 @@ def CALIBRATION_IMAGES(self,master):
 	self.IMAGE_text.pack()
 	self.IMAGE_text.place(x=10,y=380)
 	self.IMAGE_get=Entry(master,bg='grey',width=40)
-	self.IMAGE_get.insert(0,'images.ls')
+	self.IMAGE_get.insert(0,'')
 	self.IMAGE_get.pack()
 	self.IMAGE_get.place(x=90,y=380)
 	
@@ -36,7 +36,7 @@ def CALIBRATION_IMAGES(self,master):
 	self.MASTER_BIAS_text.pack()
 	self.MASTER_BIAS_text.place(x=10,y=440)
 	self.MASTER_BIAS_get=Entry(master,bg='grey',width=40)
-	self.MASTER_BIAS_get.insert(0,'bias.fits')
+	self.MASTER_BIAS_get.insert(0,'')
 	self.MASTER_BIAS_get.pack()
 	self.MASTER_BIAS_get.place(x=90,y=440)
 	
@@ -44,7 +44,7 @@ def CALIBRATION_IMAGES(self,master):
 	self.MASTER_DARK_text.pack()
 	self.MASTER_DARK_text.place(x=10,y=470)
 	self.MASTER_DARK_get=Entry(master,bg='grey',width=40)
-	self.MASTER_DARK_get.insert(0,'dark.fits')
+	self.MASTER_DARK_get.insert(0,'')
 	self.MASTER_DARK_get.pack()
 	self.MASTER_DARK_get.place(x=90,y=470)
 	
@@ -52,7 +52,7 @@ def CALIBRATION_IMAGES(self,master):
 	self.MASTER_FLAT_text.pack()
 	self.MASTER_FLAT_text.place(x=10,y=500)
 	self.MASTER_FLAT_get=Entry(master,bg='grey',width=40)
-	self.MASTER_FLAT_get.insert(0,'flat.fits')
+	self.MASTER_FLAT_get.insert(0,'')
 	self.MASTER_FLAT_get.pack()
 	self.MASTER_FLAT_get.place(x=90,y=500)
 
@@ -186,7 +186,7 @@ def CALIBRATION_IMAGES(self,master):
 		else:
 			MASTER_IMAGE=cal_data
 			MASTER_IMAGE_std=np.zeros((10,10))
-			print('only one image has been founded')
+			print('\n only one image has been founded')
 			
 		MAX_MASTER_IMAGE=max(np.amax(MASTER_IMAGE,axis=0))
 		MIN_MASTER_IMAGE=min(np.amin(MASTER_IMAGE,axis=0))
@@ -227,8 +227,8 @@ def CALIBRATION_IMAGES(self,master):
 		#plt.show()
 		
 		#display information
-		print('\n \n Calibrated image')
-		print('------------')
+		print('\n \n Reducted image')
+		print('----------------')
 		print('average= (', np.mean(MASTER_IMAGE),')')
 		print('standard deviation= (', np.std(MASTER_IMAGE),')')
 		print('max= (', max(np.amax(MASTER_IMAGE,axis=0)),')')

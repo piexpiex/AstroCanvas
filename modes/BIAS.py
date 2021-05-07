@@ -20,7 +20,7 @@ def BIAS_IMAGES(self,master):
 	self.BIAS_text.pack()
 	self.BIAS_text.place(x=10,y=380)
 	self.BIAS_get=Entry(master,bg='grey',width=40)
-	self.BIAS_get.insert(0,'bias.ls')
+	self.BIAS_get.insert(0,'')
 	self.BIAS_get.pack()
 	self.BIAS_get.place(x=90,y=380)
 
@@ -94,7 +94,7 @@ def BIAS_IMAGES(self,master):
 		else:
 			MASTER_BIAS=BIAS_data
 			MASTER_BIAS_std=np.zeros((10,10))
-			print('only one bias image has been founded')
+			print('\n only one image has been founded')
 		MAX_MASTER_BIAS=max(np.amax(MASTER_BIAS,axis=0))
 		MIN_MASTER_BIAS=min(np.amin(MASTER_BIAS,axis=0))
 		MAX_MASTER_BIAS_std=max(np.amax(MASTER_BIAS_std,axis=0))

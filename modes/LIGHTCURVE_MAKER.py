@@ -73,7 +73,7 @@ def LIGHTCURVE(self,master):
 	self.LIGHTCURVE_text.pack()
 	self.LIGHTCURVE_text.place(x=10,y=380)
 	self.LIGHTCURVE_get=Entry(master,bg='grey',width=40)
-	self.LIGHTCURVE_get.insert(0,'lightcurve.fits')
+	self.LIGHTCURVE_get.insert(0,'')
 	self.LIGHTCURVE_get.pack()
 	self.LIGHTCURVE_get.place(x=90,y=380)
 	
@@ -81,7 +81,7 @@ def LIGHTCURVE(self,master):
 	self.EXTENSION_text.pack()
 	self.EXTENSION_text.place(x=10,y=410)
 	self.EXTENSION_get=Entry(master,bg='grey',width=40)
-	self.EXTENSION_get.insert(0,'VALUES')
+	self.EXTENSION_get.insert(0,'')
 	self.EXTENSION_get.pack()
 	self.EXTENSION_get.place(x=90,y=410)
 	
@@ -89,7 +89,7 @@ def LIGHTCURVE(self,master):
 	self.TIME_COLUMN_text.pack()
 	self.TIME_COLUMN_text.place(x=10,y=440)
 	self.TIME_COLUMN_get=Entry(master,bg='grey',width=40)
-	self.TIME_COLUMN_get.insert(0,'time')
+	self.TIME_COLUMN_get.insert(0,'')
 	self.TIME_COLUMN_get.pack()
 	self.TIME_COLUMN_get.place(x=90,y=440)
 	
@@ -97,7 +97,7 @@ def LIGHTCURVE(self,master):
 	self.INTENSITY_COLUMN_text.pack()
 	self.INTENSITY_COLUMN_text.place(x=10,y=470)
 	self.INTENSITY_COLUMN_get=Entry(master,bg='grey',width=40)
-	self.INTENSITY_COLUMN_get.insert(0,'intensity')
+	self.INTENSITY_COLUMN_get.insert(0,'')
 	self.INTENSITY_COLUMN_get.pack()
 	self.INTENSITY_COLUMN_get.place(x=90,y=470)
 
@@ -184,7 +184,7 @@ def LIGHTCURVE(self,master):
 				if j==0:
 					time_data,intensity_data=np.array(read_table(LIGHTCURVE_images[j],LIGHTCURVE_extension,LIGHTCURVE_times,LIGHTCURVE_intensity))
 				else:
-					print('Only the first fits was analyzed')
+					print('\n Only the first lightcurve was analyzed')
 		
 		
 		#aqui van las cosas
@@ -271,7 +271,7 @@ def LIGHTCURVE(self,master):
 		
 		#display information
 		print('\n \n Lightcurve')
-		print('----------')
+		print('------------')
 		print('period= (', period/u.day ,')')
 	
 

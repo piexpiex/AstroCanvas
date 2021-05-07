@@ -20,14 +20,14 @@ def CONTOUR_MAP(self,master):
 	self.CONTOUR_MAP_text.pack()
 	self.CONTOUR_MAP_text.place(x=10,y=380)
 	self.CONTOUR_MAP_get=Entry(master,bg='grey',width=40)
-	self.CONTOUR_MAP_get.insert(0,'Filter_i-0-.fits')
+	self.CONTOUR_MAP_get.insert(0,'')
 	self.CONTOUR_MAP_get.pack()
 	self.CONTOUR_MAP_get.place(x=90,y=380)
 	self.CONTOUR_MAP_levels_text=Label(master,text='levels',width=10,bg='grey')
 	self.CONTOUR_MAP_levels_text.pack()
 	self.CONTOUR_MAP_levels_text.place(x=10,y=410)
 	self.CONTOUR_MAP_levels=Entry(master,bg='grey',width=40)
-	self.CONTOUR_MAP_levels.insert(0,'0,0.5,1')
+	self.CONTOUR_MAP_levels.insert(0,'')
 	self.CONTOUR_MAP_levels.pack()
 	self.CONTOUR_MAP_levels.place(x=90,y=410)
 
@@ -109,7 +109,7 @@ def CONTOUR_MAP(self,master):
 				CONTOUR_MAP=np.median(CONTOUR_MAP_data,axis=2)
 		else:
 			CONTOUR_MAP=CONTOUR_MAP_data
-			print('only one bias image has been founded')
+			print('\n only one image has been founded')
 			
 		try:
 			CONTOUR_MAP=CONTOUR_MAP[int(CONTOUR_MAP_x_1):int(CONTOUR_MAP_x_2),int(CONTOUR_MAP_y_1):int(CONTOUR_MAP_y_2)]
@@ -151,7 +151,7 @@ def CONTOUR_MAP(self,master):
 		
 		#display information
 		print('\n \n Contour map')
-		print('------------')
+		print('-------------')
 		#print('average= (', np.mean(MASTER_BIAS),')')
 		#print('standard deviation= (', np.std(MASTER_BIAS),')')
 		#print('max= (', max(np.amax(MASTER_BIAS,axis=0)),')')

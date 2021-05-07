@@ -20,7 +20,7 @@ def FLAT_IMAGES(self,master):
 	self.FLAT_text.pack()
 	self.FLAT_text.place(x=10,y=380)
 	self.FLAT_get=Entry(master,bg='grey',width=40)
-	self.FLAT_get.insert(0,'flats.ls')
+	self.FLAT_get.insert(0,'')
 	self.FLAT_get.pack()
 	self.FLAT_get.place(x=90,y=380)
 	
@@ -36,7 +36,7 @@ def FLAT_IMAGES(self,master):
 	self.MASTER_BIAS_text.pack()
 	self.MASTER_BIAS_text.place(x=10,y=440)
 	self.MASTER_BIAS_get=Entry(master,bg='grey',width=40)
-	self.MASTER_BIAS_get.insert(0,'BIAS.fits')
+	self.MASTER_BIAS_get.insert(0,'')
 	self.MASTER_BIAS_get.pack()
 	self.MASTER_BIAS_get.place(x=90,y=440)
 	
@@ -44,7 +44,7 @@ def FLAT_IMAGES(self,master):
 	self.MASTER_DARK_text.pack()
 	self.MASTER_DARK_text.place(x=10,y=470)
 	self.MASTER_DARK_get=Entry(master,bg='grey',width=40)
-	self.MASTER_DARK_get.insert(0,'DARK.fits')
+	self.MASTER_DARK_get.insert(0,'')
 	self.MASTER_DARK_get.pack()
 	self.MASTER_DARK_get.place(x=90,y=470)
 	
@@ -185,7 +185,7 @@ def FLAT_IMAGES(self,master):
 		else:
 			MASTER_FLAT=FLAT_data
 			MASTER_FLAT_std=np.zeros((10,10))
-			print('only one flat image has been founded')
+			print('\n only one image has been founded')
 			
 		if NORMALIZE=='YES' or NORMALIZE=='yes':
 			MASTER_FLAT_std=MASTER_FLAT_std/np.mean(MASTER_FLAT)

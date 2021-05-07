@@ -39,21 +39,21 @@ def RGB_IMAGES(self,master):
 	self.red_text.pack()
 	self.red_text.place(x=10,y=500)
 	self.r_get=Entry(master,bg='red',width=40)
-	self.r_get.insert(0,'Filter_i-0-.fits')
+	self.r_get.insert(0,'')
 	self.r_get.pack()
 	self.r_get.place(x=90,y=500)
 	self.green_text=Label(master,text='green image',width=10,bg='grey')
 	self.green_text.pack()
 	self.green_text.place(x=10,y=530)
 	self.g_get=Entry(master,bg='green',width=40)
-	self.g_get.insert(0,'Filter_z-0-.fits')
+	self.g_get.insert(0,'')
 	self.g_get.pack()
 	self.g_get.place(x=90,y=530)
 	self.blue_text=Label(master,text='blue image',width=10,bg='grey')
 	self.blue_text.pack()
 	self.blue_text.place(x=10,y=560)
 	self.b_get=Entry(master,bg='blue',width=40)
-	self.b_get.insert(0,'Filter_g-0-~1.fits')
+	self.b_get.insert(0,'')
 	self.b_get.pack()
 	self.b_get.place(x=90,y=560)
 	
@@ -64,7 +64,7 @@ def RGB_IMAGES(self,master):
 	self.FIT_IMAGES_text.place(x=900,y=200)
 	
 	
-	self.red_X_text=Label(master,text='r(X0)',bg='grey')
+	self.red_X_text=Label(master,text='Xi(r)',bg='grey')
 	self.red_X_text.pack()
 	self.red_X_text.place(x=900,y=230,width=60,height=25)
 	self.red_X_value=Entry(master,bg='grey')
@@ -72,7 +72,7 @@ def RGB_IMAGES(self,master):
 	self.red_X_value.pack()
 	self.red_X_value.place(x=975,y=230,width=60,height=25)
 	
-	self.red_Y_text=Label(master,text='R(Y0)',bg='grey')
+	self.red_Y_text=Label(master,text='Yi(r)',bg='grey')
 	self.red_Y_text.pack()
 	self.red_Y_text.place(x=1050,y=230,width=60,height=25)
 	self.red_Y_value=Entry(master,bg='grey')
@@ -80,7 +80,7 @@ def RGB_IMAGES(self,master):
 	self.red_Y_value.pack()
 	self.red_Y_value.place(x=1125,y=230,width=60,height=25)
 	
-	self.green_X_text=Label(master,text='G(X0)',bg='grey')
+	self.green_X_text=Label(master,text='Xi(g)',bg='grey')
 	self.green_X_text.pack()
 	self.green_X_text.place(x=900,y=260,width=60,height=25)
 	self.green_X_value=Entry(master,bg='grey')
@@ -88,7 +88,7 @@ def RGB_IMAGES(self,master):
 	self.green_X_value.pack()
 	self.green_X_value.place(x=975,y=260,width=60,height=25)
 	
-	self.green_Y_text=Label(master,text='G(Y0)',bg='grey')
+	self.green_Y_text=Label(master,text='Yi(g)',bg='grey')
 	self.green_Y_text.pack()
 	self.green_Y_text.place(x=1050,y=260,width=60,height=25)
 	self.green_Y_value=Entry(master,bg='grey')
@@ -96,7 +96,7 @@ def RGB_IMAGES(self,master):
 	self.green_Y_value.pack()
 	self.green_Y_value.place(x=1125,y=260,width=60,height=25)
 	
-	self.blue_X_text=Label(master,text='B(X0)',bg='grey')
+	self.blue_X_text=Label(master,text='Xi(b)',bg='grey')
 	self.blue_X_text.pack()
 	self.blue_X_text.place(x=900,y=290,width=60,height=25)
 	self.blue_X_value=Entry(master,bg='grey')
@@ -104,7 +104,7 @@ def RGB_IMAGES(self,master):
 	self.blue_X_value.pack()
 	self.blue_X_value.place(x=975,y=290,width=60,height=25)
 	
-	self.blue_Y_text=Label(master,text='B(Y0)',bg='grey')
+	self.blue_Y_text=Label(master,text='Yi(b)',bg='grey')
 	self.blue_Y_text.pack()
 	self.blue_Y_text.place(x=1050,y=290,width=60,height=25)
 	self.blue_Y_value=Entry(master,bg='grey')
@@ -403,7 +403,7 @@ def RGB_IMAGES(self,master):
 		
 		#display information
 		print('\n \n RGB image')
-		print('------------')
+		print('-----------')
 		print('average= (', np.mean(rgb_mean),')')
 		print('standard deviation= (', np.std(rgb_mean),')')
 		print('max= (', max(np.amax(rgb_mean,axis=0)),')')

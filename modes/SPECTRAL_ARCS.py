@@ -82,7 +82,7 @@ def SPECTRAL_ARCS(self,master):
 	self.IMAGE_text.pack()
 	self.IMAGE_text.place(x=10,y=380)
 	self.IMAGE_get=Entry(master,bg='grey',width=40)
-	self.IMAGE_get.insert(0,'arcos.fits')
+	self.IMAGE_get.insert(0,'')
 	self.IMAGE_get.pack()
 	self.IMAGE_get.place(x=90,y=380)
 	
@@ -166,7 +166,7 @@ def SPECTRAL_ARCS(self,master):
 		else:
 			MASTER_IMAGE=arc_data
 			MASTER_IMAGE_std=np.zeros((10,10))
-			print('only one image has been founded')
+			print('\n only one image has been founded')
 		
 		if combining_method_2=='average':
 			if turn=='yes':
@@ -230,7 +230,7 @@ def SPECTRAL_ARCS(self,master):
 					intensity,fwhm,mean,background=g[0].amplitude[0],g[0].stddev[0]*2.35,g[0].mean[0],g[1].amplitude[0]
 					#display information
 					print('\n \n spectral line')
-					print('------------')
+					print('---------------')
 					print('Type gaussian')
 					print('Intensity = (', g[0].amplitude[0],')')
 					print('Fwhm = (',g[0].stddev[0]*2.35,')')
@@ -244,7 +244,7 @@ def SPECTRAL_ARCS(self,master):
 					intensity,fwhm,mean,background=g[0].amplitude_L[0],g[0].fwhm_L/2+(g[0].fwhm_L/4+g[0].fwhm_G)**0.5,g[0].x_0[0],g[1].amplitude[0]
 					#display information
 					print('\n \n spectral line')
-					print('------------')
+					print('---------------')
 					print('Type voigt')
 					print('Intensity = (', g[0](g[0].x_0),')')
 					print('Fwhm = (',g[0].fwhm_L/2+(g[0].fwhm_L/4+g[0].fwhm_G)**0.5,')')
@@ -258,7 +258,7 @@ def SPECTRAL_ARCS(self,master):
 					intensity,fwhm,mean,background=g[0].amplitude[0],g[0].fwhm[0],g[0].x_0[0],g[1].amplitude[0]
 					#display information
 					print('\n \n spectral line')
-					print('------------')
+					print('---------------')
 					print('Type lorentz')
 					print('Intensity = (', g[0].amplitude[0],')')
 					print('Fwhm = (',g[0].fwhm[0],')')

@@ -36,7 +36,7 @@ def GREY_IMAGES(self,master):
 	self.grey_text.pack()
 	self.grey_text.place(x=10,y=500)
 	self.grey_get=Entry(master,bg='grey',width=40)
-	self.grey_get.insert(0,'Filter_i-0-.fits')
+	self.grey_get.insert(0,'')
 	self.grey_get.pack()
 	self.grey_get.place(x=90,y=500)
 
