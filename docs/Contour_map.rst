@@ -7,3 +7,11 @@ Contour map
    ..
 
    fig. 10 screenshot of Astrocanvas in contour map mode plotting a contour map from a science image (the lines indicateregions of equal intensity).
+
+
+
+.. code-block:: bash 
+
+   Contour map
+   -------------
+   size= 1000 X 1000

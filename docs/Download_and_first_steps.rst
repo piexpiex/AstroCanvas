@@ -31,4 +31,4 @@ First steps
 
 Currently Astrocanvas only works with data in fits files (a version which could work with data in other formats is not already avalaible), for this reason is recommended that you save your fits files in different folders according their classification (bias, flats, etc).
 
-The simple way to work with this data is making list files (Some examples are shown later), you write a list file with the files of each folder that you want to work with, a description of each mode is examplained in the next sections.
+The simple way to work with this data is making list files (Some examples are shown in next sections), you write a list file with the files of each folder that you want to work with, a description of each mode is examplained in the next sections.
