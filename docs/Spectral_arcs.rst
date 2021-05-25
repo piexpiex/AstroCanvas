@@ -35,7 +35,7 @@ To fit spectral lines is necessary to write all the following parameters. In add
 
 - **Mean**: The mean value in pixels of the spectral line.
 
-- **Intensity**: The intensity of the spectral line without the background
+- **Intensity**: The intensity of the spectral line without the background.
 
 - **Fwhm**: The fwhm of the line in pixels.
 
