@@ -4,7 +4,7 @@ Download_and_first_steps
 Download
 ========
 
-Astrocanvas download is avalaible via Github in scripts version (provisional version available at `https://github.com/piexpiex/AstroCanvas <https://github.com/piexpiex/AstroCanvas>`_) and a exe version is available in this `link <https://docs.google.com/uc?export=download&id=1eHlxlBYtdghhi_NxFmhmt8a1ksz8EtuJ>`_ .
+Astrocanvas download is avalaible via Github in scripts version (provisional version available at `https://github.com/piexpiex/AstroCanvas <https://github.com/piexpiex/AstroCanvas>`_) and a exe version is available in this `link <https://docs.google.com/uc?export=download&id=15dlO_jCA0y5SujUVx74I48P4Tmxy_yb5>`_ .
 
 If you download the exe version you will not need to install anything. However if you download the scripts version you will need to install the following Python libraries:
 
