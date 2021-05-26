@@ -69,7 +69,7 @@ def LIGHTCURVE(self,master):
 	self.LIGHTCURVE_MAKER_text=Label(master,text='LIGHTCURVE MAKER',width=45,bg='grey')
 	self.LIGHTCURVE_MAKER_text.pack()
 	self.LIGHTCURVE_MAKER_text.place(x=10,y=350)
-	self.LIGHTCURVE_text=Label(master,text='bias images',width=10,bg='grey')
+	self.LIGHTCURVE_text=Label(master,text='fits file',width=10,bg='grey')
 	self.LIGHTCURVE_text.pack()
 	self.LIGHTCURVE_text.place(x=10,y=380)
 	self.LIGHTCURVE_get=Entry(master,bg='grey',width=40)
