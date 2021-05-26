@@ -1,26 +1,23 @@
 Grey image
 **********
 
-These images represent a photometry image painted with a grey scale.
+These images represent a photometry image painted with a grey scale. Normally they are normalized to produce higger contrast.
 
 Operation files
 ---------------
 
-The aim of the xxx
+The aim of these images is to study structures and positions of photometric images. However, they are usually used to produce beautiful astronomical images.
 
 First write the name of the fits image in the **xxx** entry and...
 
-
+To create a grey image is not neccessary to create any list, only put AstroCanvas in **grey images** mode and write the name of image in the **grey image** entry. You can also select an area of the image writing the limits in the **Crop image** entries.
 
 Creation of grey images
 -----------------------
 
-To create a grey image put AstroCanvas in **grey images** mode and write the name of image in the **grey image** entry. You can also select an area of the image writing the limits in the **Crop image** entries.
-
-You could select the contrast and the intensity moving their respective scalebars. In addition, you could select the scale of the image between linear and logaritmic.
+The images are normalized from 0 to 1 and mixed, You could select the contrast and the intensity moving their respective scalebars. In addition, you could select the scale of the image between linear and logaritmic.
 
 To obtain the grey image, press the **make grey image** button and, after the processing, the grey image appears in the canvas.
-
 
 .. figure:: figures/fig9.png
    :align: center

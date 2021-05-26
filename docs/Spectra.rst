@@ -1,7 +1,7 @@
 Spectra
 *******
 
-Spectra images tipically represent the spectrum of the source in a direccion (due to the fact that they tend to be taken with a --rendija--), they are -suelen usarse para estudiar la composición, variación de la velocidad o la distancia de la fuente entre otros-
+Spectra images tipically represent the spectrum of the source in a direccion (due to the fact that they tend to be taken with a slit), they tend to be used to study, for example, the composition, variation of the velocity or the distance to the source.
 
 Operation files
 ---------------
@@ -45,7 +45,7 @@ To fit spectral lines is necessary to write all the following parameters. In add
 .. important::
   The fit is only for the line pixel, it should not fit the closest background.
 
-Later, the program will fit the line and return the fitted parameters, to obtain the spectra and the fitted line press the "Make spectra" button.
+Later, the program will fit the line and return the fitted parameters, to obtain the spectra and the fitted line press the **Make spectra** button.
 
 .. code-block:: console
 
@@ -65,3 +65,5 @@ Later, the program will fit the line and return the fitted parameters, to obtain
 
    fig. 7 screenshot of Astrocanvas in spectral arcs mode plotting the obtained pixel-to-wavelength calibration curve (error bars related to the fwhm of each line).
 
+
+Finally, you can save the sprectra writing a name and clicking on the **Save spectra as** button.

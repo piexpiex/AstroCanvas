@@ -29,7 +29,7 @@ image reduction
 
 To reduct the science image put AstroCanvas in **image reduction** mode and write the name of the list file in the **images** entry. You can also select an area of the image writing the limits in the **Crop image** entries.
 
-The master bias, master dark and master flat are indicated in the **master bias**, **master dark** and **master flat** entries respectively, you can write the name of a fits file (you should ensure that it has the same size as flat images) or a number. 
+The master bias, master dark and master flat are indicated in the **master bias**, **master dark** and **master flat** entries respectively, you can write the name of a fits file (you should ensure that it has the same size as science images) or a number. 
 
 There is also an option to select the combination of all the images (combining images entry), this can be by the median or the average (pixel by pixel) of the images.
 
